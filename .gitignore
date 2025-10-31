@@ -1,0 +1,27 @@
+# Ignore Godot editor cache and import files
+.godot/
+*.import
+*.tmp
+*.md5
+*.ctex
+
+# Ignore editor metadata and shader cache
+.godot/editor/
+.godot/shader_cache/
+.godot/imported/
+
+# Ignore OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Ignore backup and temp files
+*.tmp~
+*.bak
+*.swp
+*.log
+
+# Keep actual game code and assets
+!scenes/
+!scripts/
+!assets/
