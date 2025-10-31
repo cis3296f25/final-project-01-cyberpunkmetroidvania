@@ -7,7 +7,7 @@ This project is a video game application that implements different pieces of ins
 # How to run
 - Download the latest disk image from the Release section on the right on GitHub.  
 - Open and run the software
-- ONLY MACOS IS SUPPORTED FOR NOW
+- ONLY WINDOWS IS SUPPORTED FOR NOW
 
 ### How to build
 - Use this github repository: [... ](https://github.com/cis3296f25/final-project-01-cyberpunkmetroidvania)
