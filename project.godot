@@ -10,8 +10,8 @@ config_version=5
 
 [application]
 
-config/name="First Game"
-run/main_scene="uid://c66f2tiagg1sr"
+config/name="metroid"
+run/main_scene="uid://cwi40bdwpm37p"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
 
