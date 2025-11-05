@@ -1,10 +1,11 @@
-[gd_scene load_steps=12 format=4 uid="uid://ns3pwpuaqeh2"]
+[gd_scene load_steps=13 format=4 uid="uid://ns3pwpuaqeh2"]
 
 [ext_resource type="Texture2D" uid="uid://ulp572qj6m1h" path="res://assets/sprites/tileset 1.png" id="1_8oql1"]
 [ext_resource type="Script" uid="uid://c08aqxxpbp5xj" path="res://scripts/room_1.gd" id="1_irjyx"]
 [ext_resource type="PackedScene" uid="uid://b3hjlgmu1lcvb" path="res://scenes/player.tscn" id="2_xhekj"]
 [ext_resource type="PackedScene" uid="uid://b0tn2c4nco0fq" path="res://scenes/grass_platform.tscn" id="3_irjyx"]
 [ext_resource type="PackedScene" uid="uid://bmar3kpdyosnu" path="res://scenes/door.tscn" id="4_xhekj"]
+[ext_resource type="PackedScene" uid="uid://455chnn75dsd" path="res://scenes/cyborg_slime.tscn" id="6_0akh5"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_8oql1"]
 texture = ExtResource("1_8oql1")
@@ -179,3 +180,9 @@ script = null
 [node name="Door2" parent="." instance=ExtResource("4_xhekj")]
 position = Vector2(576, -32)
 script = null
+
+[node name="CyborgSlime" parent="." instance=ExtResource("6_0akh5")]
+position = Vector2(101, 32)
+
+[node name="CyborgSlime2" parent="." instance=ExtResource("6_0akh5")]
+position = Vector2(393, 193)
