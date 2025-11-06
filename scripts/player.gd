@@ -17,9 +17,15 @@ const GRAVITY_CUTOFF := 5000.0 #extra when you release jump early
 const COYOTE_TIME :=0.05 #seconds after leaving ledge that you can still jump
 const JUMP_BUFFER :=0.12 #seconds vefore landing a jump can be buffered
 
+#constants for wall sliding
+const WALL_SLIDE_SPEED = 50.0  #speed at which the player slides down the wall
+const WALL_JUMP_VELOCITY = -300.0  #vertical velocity for wall jump
+const WALL_JUMP_HORIZONTAL_BOOST = 200.0  #horizontal boost for wall jump
+
 var coyote_timer: float = 0.0
 var jump_buffer_timer: float = 0.0
 
+var is_wall_sliding = false
 
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
 var jump_count = 0
@@ -64,7 +70,15 @@ func _process(delta: float) -> void:
 		velocity.y += gravity_to_use * delta
 	
 	
-		# ----HANDLE JUMP (USING COYOTE + BUFFER)-----
+		# ----WALL SLIDING----
+	is_wall_sliding = false
+	if is_on_wall() and not is_on_floor():
+		is_wall_sliding = true
+		velocity.y = min(velocity.y, WALL_SLIDE_SPEED)  # Limit downward speed
+		if animated_sprite_2d.animation != "wall_slide":
+			animated_sprite_2d.play("wall_slide")
+
+		# ----HANDLE JUMP (INCLUDING WALL JUMP)-----
 	var can_jump := false
 	
 	if jump_count == 0:
@@ -79,7 +93,13 @@ func _process(delta: float) -> void:
 		jump_count += 1
 		jump_buffer_timer = 0.0
 		coyote_timer = 0.0
-	
+	elif is_wall_sliding and Input.is_action_just_pressed("jump"):
+		# Wall jump logic
+		velocity.y = WALL_JUMP_VELOCITY
+		velocity.x = WALL_JUMP_HORIZONTAL_BOOST * -sign(Input.get_axis("move_left", "move_right"))  # Jump in the direction of input
+		animated_sprite_2d.flip_h = velocity.x < 0  # Flip sprite based on jump direction
+		is_wall_sliding = false
+
 	# ----HORIZONTAL MOVEMENT----
 	var direction := Input.get_axis("move_left", "move_right")
 	var target_speed := direction * SPEED
@@ -127,5 +147,14 @@ func _process(delta: float) -> void:
 	else:
 		if animated_sprite_2d.animation != "new_idle":
 			animated_sprite_2d.play("new_idle")
+	
+	# play wall slide animation when sliding on a wall
+	if is_wall_sliding:
+		if animated_sprite_2d.animation != "wall_slide":
+			animated_sprite_2d.play("wall_slide")
+	else:
+		#not in wall slide animation when not sliding
+		if animated_sprite_2d.animation == "wall_slide":
+			animated_sprite_2d.stop()
 
 	move_and_slide()
