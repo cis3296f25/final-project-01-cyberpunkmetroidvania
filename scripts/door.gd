@@ -1,5 +1,8 @@
 extends Node2D
 
+@export var nextRoom: String
+@export var playerPosition: Vector2
+@export var jumpOnEnter: bool = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -7,12 +10,15 @@ func _ready() -> void:
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
+#func _process(delta: float) -> void:
+	#pass
 	
 	
 
-
-
-#func _on_area_2d_body_entered(body: Node2D) -> void:
-	
+func _on_body_entered(body: Node2D) -> void:
+	if body.is_in_group("player"):
+		print("player entered")
+		RoomChangeGlobal.activate = true
+		RoomChangeGlobal.playerPosition = playerPosition
+		RoomChangeGlobal.jumpOnEnter = jumpOnEnter
+		get_tree().call_deferred("change_scene_to_file", nextRoom)

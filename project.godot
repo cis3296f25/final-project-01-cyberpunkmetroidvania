@@ -15,6 +15,14 @@ run/main_scene="uid://ns3pwpuaqeh2"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+RoomChangeGlobal="*res://scripts/RoomChangeGlobal.gd"
+
+[global_group]
+
+player=""
+
 [input]
 
 jump={
