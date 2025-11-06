@@ -1,4 +1,4 @@
-[gd_scene load_steps=41 format=3 uid="uid://b3hjlgmu1lcvb"]
+[gd_scene load_steps=42 format=3 uid="uid://b3hjlgmu1lcvb"]
 
 [ext_resource type="Texture2D" uid="uid://cfsd4p82x83g" path="res://assets/sprites/knight.png" id="1_3vyb7"]
 [ext_resource type="Script" uid="uid://vjcslsv21g6e" path="res://scripts/player.gd" id="1_g2els"]
@@ -141,6 +141,10 @@ region = Rect2(192, 96, 32, 32)
 atlas = ExtResource("1_3vyb7")
 region = Rect2(224, 96, 32, 32)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_jc3p3"]
+atlas = ExtResource("4_qlg0r")
+region = Rect2(0, 0, 48, 48)
+
 [sub_resource type="SpriteFrames" id="SpriteFrames_tuyoq"]
 animations = [{
 "frames": [{
@@ -264,6 +268,14 @@ animations = [{
 "loop": true,
 "name": &"walk",
 "speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jc3p3")
+}],
+"loop": true,
+"name": &"wall_slide",
+"speed": 5.0
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jc3p3"]
@@ -275,9 +287,9 @@ script = ExtResource("1_g2els")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_tuyoq")
-animation = &"new_walk"
+animation = &"wall_slide"
 autoplay = "new_idle"
-frame_progress = 0.48013264
+frame_progress = 0.8939331
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 z_index = 5
