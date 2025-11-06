@@ -1,16 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://bmar3kpdyosnu"]
+[gd_scene load_steps=2 format=3 uid="uid://bmar3kpdyosnu"]
 
 [ext_resource type="Script" uid="uid://bbv4axbvxr1qe" path="res://scripts/door.gd" id="1_hpvv5"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_5f452"]
-size = Vector2(64, 64)
-
-[node name="Door" type="Node2D"]
+[node name="Door" type="Area2D"]
 script = ExtResource("1_hpvv5")
 
-[node name="Area2D" type="Area2D" parent="."]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-shape = SubResource("RectangleShape2D_5f452")
-
-[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
