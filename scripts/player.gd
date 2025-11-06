@@ -156,14 +156,13 @@ func _process(delta: float) -> void:
 		else:
 			if animated_sprite_2d.animation != "new_idle":
 				animated_sprite_2d.play("new_idle")
-	
-    # play wall slide animation when sliding on a wall
-    if is_wall_sliding:
-      if animated_sprite_2d.animation != "wall_slide":
-        animated_sprite_2d.play("wall_slide")
-    else:
-      #not in wall slide animation when not sliding
-      if animated_sprite_2d.animation == "wall_slide":
-        animated_sprite_2d.stop()
+		# play wall slide animation when sliding on a wall
+		if is_wall_sliding:
+			if animated_sprite_2d.animation != "wall_slide":
+				animated_sprite_2d.play("wall_slide")
+		else:
+		  #not in wall slide animation when not sliding
+			if animated_sprite_2d.animation == "wall_slide":
+				animated_sprite_2d.stop()
 
 	move_and_slide()
