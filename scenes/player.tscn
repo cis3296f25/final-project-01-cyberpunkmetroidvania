@@ -2,8 +2,34 @@
 
 [ext_resource type="Texture2D" uid="uid://cfsd4p82x83g" path="res://assets/sprites/knight.png" id="1_3vyb7"]
 [ext_resource type="Script" uid="uid://vjcslsv21g6e" path="res://scripts/player.gd" id="1_g2els"]
+[ext_resource type="Texture2D" uid="uid://xu7bv43oiu01" path="res://assets/sprites/steve hp.png" id="2_tuyoq"]
 [ext_resource type="Texture2D" uid="uid://jfcpwcs0m0xy" path="res://assets/sprites/steve idle.png" id="3_dqkch"]
+[ext_resource type="Texture2D" uid="uid://bsv1swb0dt8vj" path="res://assets/sprites/steve lp.png" id="3_qlg0r"]
 [ext_resource type="Texture2D" uid="uid://cqqs1lh0t68he" path="res://assets/sprites/steve walk.png" id="4_qlg0r"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j2b1d"]
+atlas = ExtResource("2_tuyoq")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cs1tg"]
+atlas = ExtResource("2_tuyoq")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2dvfe"]
+atlas = ExtResource("2_tuyoq")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_giy8y"]
+atlas = ExtResource("2_tuyoq")
+region = Rect2(144, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fdfoy"]
+atlas = ExtResource("2_tuyoq")
+region = Rect2(192, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hhpqf"]
+atlas = ExtResource("2_tuyoq")
+region = Rect2(240, 0, 48, 48)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_g2els"]
 atlas = ExtResource("1_3vyb7")
@@ -20,6 +46,18 @@ region = Rect2(64, 0, 32, 32)
 [sub_resource type="AtlasTexture" id="AtlasTexture_qlg0r"]
 atlas = ExtResource("1_3vyb7")
 region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jc3p3"]
+atlas = ExtResource("3_qlg0r")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hax0n"]
+atlas = ExtResource("3_qlg0r")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_t4otl"]
+atlas = ExtResource("3_qlg0r")
+region = Rect2(96, 0, 48, 48)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_a38lo"]
 atlas = ExtResource("3_dqkch")
@@ -149,6 +187,29 @@ region = Rect2(0, 0, 48, 48)
 animations = [{
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_j2b1d")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cs1tg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2dvfe")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_giy8y")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fdfoy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hhpqf")
+}],
+"loop": true,
+"name": &"heavy_punch",
+"speed": 9.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_g2els")
 }, {
 "duration": 1.0,
@@ -162,6 +223,20 @@ animations = [{
 }],
 "loop": true,
 "name": &"idle",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jc3p3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hax0n")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_t4otl")
+}],
+"loop": true,
+"name": &"light_punch",
 "speed": 10.0
 }, {
 "frames": [{
@@ -281,12 +356,19 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jc3p3"]
 size = Vector2(14, 29)
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_g5jhy"]
+radius = 8.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_holxr"]
+
 [node name="Player" type="CharacterBody2D"]
 collision_layer = 3
 script = ExtResource("1_g2els")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_tuyoq")
+animation = &"light_punch"
+autoplay = "new_idle"
 animation = &"wall_slide"
 autoplay = "new_idle"
 frame_progress = 0.8939331
@@ -295,3 +377,11 @@ frame_progress = 0.8939331
 z_index = 5
 position = Vector2(1, 1.5)
 shape = SubResource("RectangleShape2D_jc3p3")
+
+[node name="LightPunchHitbox" type="CollisionShape2D" parent="."]
+position = Vector2(10, 1)
+shape = SubResource("CircleShape2D_g5jhy")
+
+[node name="HeavyPunchHitbox" type="CollisionShape2D" parent="."]
+position = Vector2(12, 3)
+shape = SubResource("CircleShape2D_holxr")
