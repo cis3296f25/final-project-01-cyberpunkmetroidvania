@@ -69,6 +69,9 @@ func _ready() -> void:
 		global_position = RoomChangeGlobal.playerPosition
 		if RoomChangeGlobal.jumpOnEnter:
 			velocity.y = JUMP_VELOCITY
+		RoomChangeGlobal.playerDone = true
+	
+	if RoomChangeGlobal.camDone:
 		RoomChangeGlobal.activate = false
 
 # --- ATTACK FUNCTIONS ---
