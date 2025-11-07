@@ -140,29 +140,41 @@ func _process(delta: float) -> void:
 		velocity.x = 0.0
 
 	# ---------------- ATTACK STATE ----------------
-	# Only start an attack if we're not already attacking.
-	if not attacking and Input.is_action_just_pressed("attack"):
-		if Input.is_key_pressed(KEY_SHIFT):
-			start_heavy_attack_animation()
-		else:
-			start_light_attack_animation()
+	# Prevent attacks from being queued while wall sliding
+	if not is_wall_sliding:
+		# Only start an attack if we're not already attacking.
+		if not attacking and Input.is_action_just_pressed("attack"):
+			if Input.is_key_pressed(KEY_SHIFT):
+				start_heavy_attack_animation()
+			else:
+				start_light_attack_animation()
 
 	# ---------------- ANIMATION STATE ----------------
-	# While attacking, don't overwrite the attack animation with idle/walk.
-	if not attacking:
+	# Ensure attacking state takes precedence over wall sliding
+	if attacking:
+		# While attacking, don't overwrite the attack animation with wall_slide
+		if animated_sprite_2d.animation not in ["light_punch", "heavy_punch"]:
+			if Input.is_key_pressed(KEY_SHIFT):
+				start_heavy_attack_animation()
+			else:
+				start_light_attack_animation()
+	else:
+		# Handle wall sliding animations
+		if is_wall_sliding:
+			if animated_sprite_2d.animation != "wall_slide":
+				animated_sprite_2d.play("wall_slide")
+		else:
+			# Ensure wall_slide animation is stopped when not sliding
+			if animated_sprite_2d.animation == "wall_slide":
+				animated_sprite_2d.stop()
+
+	# Ensure walking animation plays correctly when not attacking or wall sliding
+	if not attacking and not is_wall_sliding:
 		if abs(velocity.x) > 10.0:
 			if animated_sprite_2d.animation != "new_walk":
 				animated_sprite_2d.play("new_walk")
 		else:
 			if animated_sprite_2d.animation != "new_idle":
 				animated_sprite_2d.play("new_idle")
-		# play wall slide animation when sliding on a wall
-		if is_wall_sliding:
-			if animated_sprite_2d.animation != "wall_slide":
-				animated_sprite_2d.play("wall_slide")
-		else:
-		  #not in wall slide animation when not sliding
-			if animated_sprite_2d.animation == "wall_slide":
-				animated_sprite_2d.stop()
 
 	move_and_slide()
