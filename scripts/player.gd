@@ -40,10 +40,15 @@ var can_dash := true
 const HEAVY_DAMAGE = 1.75
 const LIGHT_DAMAGE = 1.00
 
+var health = 10
+
 # --- NODE REFERENCES ---
 @onready var healthbar = $HealthBar
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
-@onready var collision_shape: CollisionShape2D = $CollisionShape2D
+@onready var collision_shape: CollisionShape2D = $HurtBox/CollisionShape2D
+
+@onready var dashCooldown: Timer = $dashCooldown
+@onready var dashDuration: Timer = $dashDuration
 
 # --- READY FUNCTION ---
 func _ready() -> void:
@@ -51,7 +56,7 @@ func _ready() -> void:
 	
 	add_to_group("player")
 	
-	var health = 10
+	
 	healthbar.initHealth(health)
 
 	if animated_sprite_2d.sprite_frames:
@@ -83,10 +88,10 @@ func _on_animation_finished() -> void:
 		animated_sprite_2d.play("new_idle")
 
 # --- MAIN PROCESS LOOP ---
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	# Skip movement updates if currently dashing
-	if is_dashing:
-		return
+	#if is_dashing:
+		#return
 
 	# --- GRAVITY / COYOTE / BUFFER JUMP ---
 	if is_on_floor():
@@ -135,6 +140,11 @@ func _process(delta: float) -> void:
 
 	# --- HORIZONTAL MOVEMENT ---
 	var direction := Input.get_axis("move_left", "move_right")
+	
+	#var dash_speed := SPEED
+	#if is_dashing:
+		#dash_speed += 100
+	
 	var target_speed := direction * SPEED
 
 	if direction > 0.0:
@@ -145,6 +155,8 @@ func _process(delta: float) -> void:
 	var accel: float
 	if is_on_floor():
 		accel = (ACCEL if direction != 0.0 else DECEL)
+		#if(is_dashing):
+			#accel *= 2
 	else:
 		if direction == 0.0:
 			accel = DECEL
@@ -152,22 +164,38 @@ func _process(delta: float) -> void:
 			var vel_sign: int = sign(velocity.x)
 			var dir_sign: int = sign(direction)
 			accel = (AIR_TURN_ACCEL if vel_sign != 0 and dir_sign != 0 and vel_sign != dir_sign else AIR_ACCEL)
+			#if(is_dashing):
+				#accel *= 2
+	
+	if(is_dashing):
+		print("dashing - from _process")
+		target_speed *= 4
+		accel *= 8
+	
 
 	velocity.x = move_toward(velocity.x, target_speed, accel * delta)
-	if abs(velocity.x) < 5.0:
-		velocity.x = 0.0
-
+	
 	# --- DASH INPUT ---
 	if Input.is_action_just_pressed("roll") and can_dash:
+		print("dashing")
 		perform_dash()
+	
+	
+	if abs(velocity.x) < 5.0:
+		velocity.x = 0.0
+	
+	if is_dashing:
+		velocity.y = 0
 
-	# --- ATTACK INPUT ---
-	if not is_wall_sliding:
-		if not attacking and Input.is_action_just_pressed("attack"):
-			if Input.is_key_pressed(KEY_SHIFT):
-				start_heavy_attack_animation()
-			else:
-				start_light_attack_animation()
+	
+	
+	
+func _process(_delta: float) -> void:
+	if not is_wall_sliding and is_on_floor() and not attacking and Input.is_action_just_pressed("attack"):
+		if Input.is_key_pressed(KEY_SHIFT):
+			start_heavy_attack_animation()
+		else:
+			start_light_attack_animation()
 
 	# --- ANIMATION STATE ---
 	if attacking:
@@ -183,15 +211,33 @@ func _process(delta: float) -> void:
 		else:
 			if animated_sprite_2d.animation == "wall_slide":
 				animated_sprite_2d.stop()
-
-	if not attacking and not is_wall_sliding and not is_dashing:
-		if abs(velocity.x) > 10.0:
-			if animated_sprite_2d.animation != "new_walk":
-				animated_sprite_2d.play("new_walk")
+	
+	if is_on_floor() and not attacking and not is_wall_sliding:
+		if(not is_dashing):
+			if abs(velocity.x) > 10.0:
+				if animated_sprite_2d.animation != "new_walk":
+					animated_sprite_2d.play("new_walk")
+			else:
+				if animated_sprite_2d.animation != "new_idle":
+					animated_sprite_2d.play("new_idle")
+		elif is_dashing:
+			if animated_sprite_2d.animation != "dash":
+				animated_sprite_2d.play("dash")
+	
+	if not is_on_floor() and not is_wall_sliding:
+		if not is_dashing:
+			if velocity.y > 0:
+				if animated_sprite_2d.animation != "fall":
+					animated_sprite_2d.play("fall")
+			else:
+				if animated_sprite_2d.animation != "jump":
+					animated_sprite_2d.play("jump")
 		else:
-			if animated_sprite_2d.animation != "new_idle":
-				animated_sprite_2d.play("new_idle")
-
+			if animated_sprite_2d.animation != "dive":
+				pass #animate a dive
+				
+	
+	
 	move_and_slide()
 
 # --- DASH FUNCTION ---
@@ -199,17 +245,20 @@ func perform_dash() -> void:
 	is_dashing = true
 	can_dash = false
 	collision_shape.disabled = true  # Disable hitbox (invincible)
+	dashDuration.start()
+	print("timer started")
 
-	var dash_dir := -1 if animated_sprite_2d.flip_h else 1
-	global_position.x += dash_dir * DASH_DISTANCE  # Instantly move forward
-
-	if "roll" in animated_sprite_2d.sprite_frames.get_animation_names():
-		animated_sprite_2d.play("roll")
-
-	await get_tree().create_timer(DASH_DURATION).timeout
-
+func _on_dash_duration_timeout() -> void:
 	collision_shape.disabled = false
 	is_dashing = false
+	dashCooldown.start() 
+	
 
-	await get_tree().create_timer(DASH_COOLDOWN).timeout
+func _on_dash_cooldown_timeout() -> void:
 	can_dash = true
+
+
+func _on_hurt_box_body_entered(body: Node2D) -> void:
+	if body.is_in_group("enemy"):
+		print("damage taken")
+		health -= 1
