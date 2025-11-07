@@ -1,4 +1,4 @@
-[gd_scene load_steps=42 format=3 uid="uid://b3hjlgmu1lcvb"]
+[gd_scene load_steps=55 format=3 uid="uid://b3hjlgmu1lcvb"]
 
 [ext_resource type="Texture2D" uid="uid://cfsd4p82x83g" path="res://assets/sprites/knight.png" id="1_3vyb7"]
 [ext_resource type="Script" uid="uid://vjcslsv21g6e" path="res://scripts/player.gd" id="1_g2els"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://jfcpwcs0m0xy" path="res://assets/sprites/steve idle.png" id="3_dqkch"]
 [ext_resource type="Texture2D" uid="uid://bsv1swb0dt8vj" path="res://assets/sprites/steve lp.png" id="3_qlg0r"]
 [ext_resource type="Texture2D" uid="uid://cqqs1lh0t68he" path="res://assets/sprites/steve walk.png" id="4_qlg0r"]
+[ext_resource type="PackedScene" uid="uid://b3jtamywhftrn" path="res://scenes/health_bar.tscn" id="7_fjrip"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_j2b1d"]
 atlas = ExtResource("2_tuyoq")
@@ -48,7 +49,7 @@ atlas = ExtResource("1_3vyb7")
 region = Rect2(96, 0, 32, 32)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_jc3p3"]
-atlas = ExtResource("3_qlg0r")
+atlas = ExtResource("4_qlg0r")
 region = Rect2(0, 0, 48, 48)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_hax0n"]
@@ -178,10 +179,6 @@ region = Rect2(192, 96, 32, 32)
 [sub_resource type="AtlasTexture" id="AtlasTexture_i4ail"]
 atlas = ExtResource("1_3vyb7")
 region = Rect2(224, 96, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_jc3p3"]
-atlas = ExtResource("4_qlg0r")
-region = Rect2(0, 0, 48, 48)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_tuyoq"]
 animations = [{
@@ -367,8 +364,6 @@ script = ExtResource("1_g2els")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_tuyoq")
-animation = &"light_punch"
-autoplay = "new_idle"
 animation = &"wall_slide"
 autoplay = "new_idle"
 frame_progress = 0.8939331
@@ -385,3 +380,10 @@ shape = SubResource("CircleShape2D_g5jhy")
 [node name="HeavyPunchHitbox" type="CollisionShape2D" parent="."]
 position = Vector2(12, 3)
 shape = SubResource("CircleShape2D_holxr")
+
+[node name="HealthBar" parent="." instance=ExtResource("7_fjrip")]
+z_index = 2
+offset_left = -17.0
+offset_top = 20.0
+offset_right = 16.0
+offset_bottom = 23.0

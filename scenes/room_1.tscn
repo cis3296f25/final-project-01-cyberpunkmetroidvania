@@ -1,13 +1,12 @@
-[gd_scene load_steps=13 format=4 uid="uid://ns3pwpuaqeh2"]
+[gd_scene load_steps=14 format=4 uid="uid://ns3pwpuaqeh2"]
 
 [ext_resource type="Texture2D" uid="uid://ulp572qj6m1h" path="res://assets/sprites/tileset 1.png" id="1_8oql1"]
 [ext_resource type="Script" uid="uid://c08aqxxpbp5xj" path="res://scripts/room_1.gd" id="1_irjyx"]
 [ext_resource type="PackedScene" uid="uid://b3hjlgmu1lcvb" path="res://scenes/player.tscn" id="2_xhekj"]
-[ext_resource type="PackedScene" uid="uid://b0tn2c4nco0fq" path="res://scenes/grass_platform.tscn" id="3_irjyx"]
 [ext_resource type="TileSet" uid="uid://b0yo1iogjkfkk" path="res://assets/tilesets/general set.tres" id="4_0akh5"]
 [ext_resource type="PackedScene" uid="uid://bmar3kpdyosnu" path="res://scenes/door.tscn" id="4_xhekj"]
 [ext_resource type="PackedScene" uid="uid://cp26yrfiml1p2" path="res://scenes/platform.tscn" id="5_irjyx"]
-[ext_resource type="PackedScene" path="res://scenes/cyborg_slime.tscn" id="6_0akh5"]
+[ext_resource type="PackedScene" uid="uid://455chnn75dsd" path="res://scenes/cyborg_slime.tscn" id="6_0akh5"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_irjyx"]
 texture = ExtResource("1_8oql1")
@@ -114,16 +113,11 @@ nextRoom = "res://scenes/room_2.tscn"
 playerPosition = Vector2(16, 16)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Door2"]
-position = Vector2(1.5, 6)
-shape = SubResource("RectangleShape2D_d0u7m")
 position = Vector2(576, -32)
-script = null
-
-[node name="CyborgSlime" parent="." instance=ExtResource("6_0akh5")]
-position = Vector2(101, 32)
+shape = SubResource("RectangleShape2D_d0u7m")
 
 [node name="CyborgSlime2" parent="." instance=ExtResource("6_0akh5")]
-position = Vector2(393, 193)
+position = Vector2(279, 191)
 
 [node name="floatingPlatform" parent="." instance=ExtResource("5_irjyx")]
 position = Vector2(304, 80)

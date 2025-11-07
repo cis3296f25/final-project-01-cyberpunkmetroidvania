@@ -41,12 +41,18 @@ const HEAVY_DAMAGE = 1.75
 const LIGHT_DAMAGE = 1.00
 
 # --- NODE REFERENCES ---
+@onready var healthbar = $HealthBar
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 
 # --- READY FUNCTION ---
 func _ready() -> void:
+	
+	
 	add_to_group("player")
+	
+	var health = 10
+	healthbar.initHealth(health)
 
 	if animated_sprite_2d.sprite_frames:
 		animated_sprite_2d.sprite_frames.set_animation_loop("light_punch", false)
