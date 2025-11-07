@@ -26,6 +26,7 @@ const HEAVY_DAMAGE = 1.75
 const LIGHT_DAMAGE = 1.00
 var is_wall_sliding = false
 
+@onready var healthbar = $HealthBar
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
 var jump_count = 0
 const MAX_JUMPS = 2
@@ -33,7 +34,12 @@ const MAX_JUMPS = 2
 var attacking := false
 
 func _ready() -> void:
+	
+	
 	add_to_group("player")
+	
+	var health = 10
+	healthbar.initHealth(health)
 
 	# Ensure attack clips don't loop
 	if animated_sprite_2d.sprite_frames:
@@ -178,3 +184,4 @@ func _process(delta: float) -> void:
 				animated_sprite_2d.play("new_idle")
 
 	move_and_slide()
+	
