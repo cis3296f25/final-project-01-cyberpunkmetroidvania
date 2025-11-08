@@ -1,9 +1,10 @@
-[gd_scene load_steps=7 format=4 uid="uid://bl4xf88rcefnd"]
+[gd_scene load_steps=8 format=4 uid="uid://bl4xf88rcefnd"]
 
 [ext_resource type="TileSet" uid="uid://b0yo1iogjkfkk" path="res://assets/tilesets/general set.tres" id="1_4et86"]
 [ext_resource type="PackedScene" uid="uid://cp26yrfiml1p2" path="res://scenes/platform.tscn" id="2_ktm03"]
 [ext_resource type="PackedScene" uid="uid://bmar3kpdyosnu" path="res://scenes/door.tscn" id="3_lsxps"]
 [ext_resource type="PackedScene" uid="uid://b3hjlgmu1lcvb" path="res://scenes/player.tscn" id="4_ktm03"]
+[ext_resource type="PackedScene" uid="uid://c4pp4yend8i2s" path="res://scenes/player_cam.tscn" id="4_lsxps"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ktm03"]
 size = Vector2(64, 64)
@@ -33,20 +34,21 @@ position = Vector2(272, 176)
 [node name="Player" parent="." instance=ExtResource("4_ktm03")]
 position = Vector2(24, 16)
 
-[node name="Camera2D" type="Camera2D" parent="Player"]
-position = Vector2(0, 6)
-zoom = Vector2(3, 3)
+[node name="PlayerCam" parent="Player" instance=ExtResource("4_lsxps")]
 limit_left = 0
 limit_right = 544
 limit_bottom = 384
-limit_smoothed = true
-position_smoothing_enabled = true
-position_smoothing_speed = 2.0
+limit_smoothed = false
+position_smoothing_enabled = false
 
 [node name="Door2" parent="." instance=ExtResource("3_lsxps")]
 position = Vector2(-32, 0)
 nextRoom = "res://scenes/room_1.tscn"
-playerPosition = Vector2(512, -32.5)
+playerPosition = Vector2(512, -16)
+limit_left = -97
+limit_top = -10000
+limit_right = 544
+limit_bottom = 220
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Door2"]
 shape = SubResource("RectangleShape2D_ktm03")
@@ -54,7 +56,11 @@ shape = SubResource("RectangleShape2D_ktm03")
 [node name="Door" parent="." instance=ExtResource("3_lsxps")]
 position = Vector2(-32, 192)
 nextRoom = "res://scenes/room_1.tscn"
-playerPosition = Vector2(512, 160)
+playerPosition = Vector2(512, 176)
+limit_left = -97
+limit_top = -10000
+limit_right = 544
+limit_bottom = 220
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Door"]
 shape = SubResource("RectangleShape2D_lsxps")

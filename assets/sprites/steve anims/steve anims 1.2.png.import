@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://xu7bv43oiu01"
-path="res://.godot/imported/steve hp.png-25bebd799e5fcce9251630e1b0db3f99.ctex"
+uid="uid://bafdoghcag2g0"
+path="res://.godot/imported/steve anims 1.2.png-0a1c0031604b82fb58b612daeafbcc0e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/steve hp.png"
-dest_files=["res://.godot/imported/steve hp.png-25bebd799e5fcce9251630e1b0db3f99.ctex"]
+source_file="res://assets/sprites/steve anims/steve anims 1.2.png"
+dest_files=["res://.godot/imported/steve anims 1.2.png-0a1c0031604b82fb58b612daeafbcc0e.ctex"]
 
 [params]
 
