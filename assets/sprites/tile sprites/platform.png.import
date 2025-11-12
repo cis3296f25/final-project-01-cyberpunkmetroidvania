@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://jfcpwcs0m0xy"
-path="res://.godot/imported/steve idle.png-7a07bd0262815142ecdd5abf07684762.ctex"
+uid="uid://beehdjta07lja"
+path="res://.godot/imported/platform.png-d280b656ee172c9ca85f103572230638.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/steve idle.png"
-dest_files=["res://.godot/imported/steve idle.png-7a07bd0262815142ecdd5abf07684762.ctex"]
+source_file="res://assets/sprites/tile sprites/platform.png"
+dest_files=["res://.godot/imported/platform.png-d280b656ee172c9ca85f103572230638.ctex"]
 
 [params]
 

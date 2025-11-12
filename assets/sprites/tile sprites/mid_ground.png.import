@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://xu7bv43oiu01"
-path="res://.godot/imported/steve hp.png-25bebd799e5fcce9251630e1b0db3f99.ctex"
+uid="uid://c5wnb2kquevx"
+path="res://.godot/imported/mid_ground.png-67bde9d3517e6325634e9d88dd9ec19d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/steve hp.png"
-dest_files=["res://.godot/imported/steve hp.png-25bebd799e5fcce9251630e1b0db3f99.ctex"]
+source_file="res://assets/sprites/tile sprites/mid_ground.png"
+dest_files=["res://.godot/imported/mid_ground.png-67bde9d3517e6325634e9d88dd9ec19d.ctex"]
 
 [params]
 

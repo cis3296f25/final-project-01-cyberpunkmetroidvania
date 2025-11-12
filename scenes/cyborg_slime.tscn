@@ -1,7 +1,8 @@
-[gd_scene load_steps=9 format=3 uid="uid://455chnn75dsd"]
+[gd_scene load_steps=10 format=3 uid="uid://455chnn75dsd"]
 
+[ext_resource type="Script" uid="uid://cvxq514mjt5p7" path="res://scripts/cyborg_slime.gd" id="1_3clqj"]
 [ext_resource type="Texture2D" uid="uid://bnqlc7solfiep" path="res://assets/sprites/cyborg_slime_purple.png" id="1_suvgo"]
-[ext_resource type="PackedScene" uid="uid://btvetxn3a0nfn" path="res://scenes/killzone.tscn" id="2_3clqj"]
+[ext_resource type="PackedScene" uid="uid://btvetxn3a0nfn" path="res://scenes/level stuff/killzone.tscn" id="2_3clqj"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_6d3ql"]
 atlas = ExtResource("1_suvgo")
@@ -40,19 +41,20 @@ animations = [{
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_nmw48"]
-size = Vector2(12, 15)
+size = Vector2(8, 11.5)
 
-[node name="CyborgSlime" type="Node2D"]
+[node name="CyborgSlime" type="Node2D" groups=["enemy"]]
+script = ExtResource("1_3clqj")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -12)
 sprite_frames = SubResource("SpriteFrames_660gq")
 autoplay = "default"
-frame = 2
-frame_progress = 0.70900106
+frame = 3
+frame_progress = 0.2980482
 
-[node name="Killzone" parent="." instance=ExtResource("2_3clqj")]
+[node name="Hitbox" parent="." instance=ExtResource("2_3clqj")]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Killzone"]
-position = Vector2(0, -8)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+position = Vector2(0, -6.25)
 shape = SubResource("RectangleShape2D_nmw48")

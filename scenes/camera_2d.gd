@@ -1,10 +1,4 @@
-extends Node
-
-var activate: bool = false
-var camDone: bool = true
-var playerDone: bool = true
-var playerPosition: Vector2
-var jumpOnEnter: bool
+extends Camera2D
 
 
 # Called when the node enters the scene tree for the first time.
