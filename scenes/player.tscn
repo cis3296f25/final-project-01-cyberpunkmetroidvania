@@ -353,10 +353,10 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jc3p3"]
 size = Vector2(14, 29)
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_g5jhy"]
-radius = 8.0
+[sub_resource type="CircleShape2D" id="CircleShape2D_fjrip"]
+radius = 7.0
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_holxr"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_smehm"]
 
 [node name="Player" type="CharacterBody2D"]
 collision_layer = 3
@@ -373,17 +373,23 @@ z_index = 5
 position = Vector2(1, 1.5)
 shape = SubResource("RectangleShape2D_jc3p3")
 
-[node name="LightPunchHitbox" type="CollisionShape2D" parent="."]
-position = Vector2(10, 1)
-shape = SubResource("CircleShape2D_g5jhy")
-
-[node name="HeavyPunchHitbox" type="CollisionShape2D" parent="."]
-position = Vector2(12, 3)
-shape = SubResource("CircleShape2D_holxr")
-
 [node name="HealthBar" parent="." instance=ExtResource("7_fjrip")]
 z_index = 2
 offset_left = -17.0
 offset_top = 20.0
 offset_right = 16.0
 offset_bottom = 23.0
+
+[node name="LightAttackHitBox" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LightAttackHitBox"]
+position = Vector2(15, 0)
+shape = SubResource("CircleShape2D_fjrip")
+
+[node name="HeavyAttackHitBox" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HeavyAttackHitBox"]
+light_mask = 2
+visibility_layer = 2
+position = Vector2(18, 1)
+shape = SubResource("CircleShape2D_smehm")
