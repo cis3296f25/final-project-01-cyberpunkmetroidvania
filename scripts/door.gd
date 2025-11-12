@@ -29,4 +29,8 @@ func _on_body_entered(body: Node2D) -> void:
 		RoomChangeGlobal.playerDone = false
 		RoomChangeGlobal.playerPosition = playerPosition
 		RoomChangeGlobal.jumpOnEnter = jumpOnEnter
+		RoomChangeGlobal.limit_left = limit_left
+		RoomChangeGlobal.limit_top = limit_top
+		RoomChangeGlobal.limit_right = limit_right
+		RoomChangeGlobal.limit_bottom = limit_bottom
 		get_tree().call_deferred("change_scene_to_file", nextRoom)
