@@ -12,7 +12,6 @@ const JUMP_VELOCITY = -300.0
 const GRAVITY_UP := 700.0
 const GRAVITY_DOWN := 1300.0
 const GRAVITY_CUTOFF := 5000.0
-# test
 
 const COYOTE_TIME := 0.05
 const JUMP_BUFFER := 0.12
@@ -39,25 +38,25 @@ var coyote_timer: float = 0.0
 var jump_buffer_timer: float = 0.0
 var jump_count = 0
 const MAX_JUMPS = 2
-var facing := Vector2.RIGHT
 
+var attacking := false
 var is_wall_sliding := false
 var is_dashing := false
 var can_dash := true
 
+const HEAVY_DAMAGE = 1.75
+const LIGHT_DAMAGE = 1.00
 
 var health = 10
+
+# --- ABILITY CHECKS ---
+var has_wall_jump := false
+var has_double_jump := false
 
 # --- NODE REFERENCES ---
 @onready var healthbar = $HealthBar
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
 @onready var collision_shape: CollisionShape2D = $HurtBox/CollisionShape2D
-
-# -- ATTACK NODES --
-@onready var lp_hitbox: Area2D = $LPHitbox
-@onready var lp_hitbox_shape: CollisionShape2D = $LPHitbox/LightPunchHitbox
-@onready var hp_hitbox: Area2D = $HPHitbox
-@onready var hp_hitbox_shape: CollisionShape2D = $HPHitbox/HeavyPunchHitbox
 
 @onready var dashCooldown: Timer = $dashCooldown
 @onready var dashDuration: Timer = $dashDuration
@@ -68,15 +67,9 @@ func _ready() -> void:
 	
 	add_to_group("player")
 	
-	_hitbox_off_all()
-	lp_hitbox.area_entered.connect(_on_light_area_entered)
-	hp_hitbox.area_entered.connect(_on_heavy_area_entered)
-	_position_hitboxes_ahead()
-
 	
 	healthbar.initHealth(health)
 
-	# -- ATTACK ANIMATION LOGIC --
 	if animated_sprite_2d.sprite_frames:
 		animated_sprite_2d.sprite_frames.set_animation_loop("light_punch", false)
 		animated_sprite_2d.sprite_frames.set_animation_loop("heavy_punch", false)
@@ -91,6 +84,25 @@ func _ready() -> void:
 	
 	if RoomChangeGlobal.camDone:
 		RoomChangeGlobal.activate = false
+		
+	has_double_jump = RoomChangeGlobal.has_double_jump
+	has_wall_jump = RoomChangeGlobal.has_wall_jump
+
+# --- ATTACK FUNCTIONS ---
+func start_light_attack_animation():
+	attacking = true
+	animated_sprite_2d.play("light_punch")
+	animated_sprite_2d.frame = 0
+
+func start_heavy_attack_animation():
+	attacking = true
+	animated_sprite_2d.play("heavy_punch")
+	animated_sprite_2d.frame = 0
+
+func _on_animation_finished() -> void:
+	if animated_sprite_2d.animation in ["light_punch", "heavy_punch"]:
+		attacking = false
+		animated_sprite_2d.play("new_idle")
 
 # --- MAIN PROCESS LOOP ---
 func _physics_process(delta: float) -> void:
@@ -98,11 +110,16 @@ func _physics_process(delta: float) -> void:
 	#if is_dashing:
 		#return
 
+	# --- CHECK FOR SPIKE COLLISION ---
+	check_spike_collision()
+
 	# --- GRAVITY / COYOTE / BUFFER JUMP ---
 	if is_on_floor():
 		coyote_timer = COYOTE_TIME
 		jump_count = 0
 	else:
+		if coyote_timer > 0.0:
+			jump_count = 1
 		coyote_timer = max(coyote_timer - delta, 0.0)
 
 	if jump_buffer_timer > 0.0:
@@ -119,7 +136,7 @@ func _physics_process(delta: float) -> void:
 
 	# --- WALL SLIDING ---
 	is_wall_sliding = false
-	if is_on_wall() and not is_on_floor():
+	if is_on_wall() and not is_on_floor() and has_wall_jump:
 		is_wall_sliding = true
 		velocity.y = min(velocity.y, WALL_SLIDE_SPEED)
 		if animated_sprite_2d.animation != "wall_slide":
@@ -129,8 +146,10 @@ func _physics_process(delta: float) -> void:
 	var can_jump := false
 	if jump_count == 0:
 		can_jump = (is_on_floor() or coyote_timer > 0.0)
+	elif has_double_jump:
+		can_jump = (jump_count < MAX_JUMPS) #MAX_JUMPS
 	else:
-		can_jump = (jump_count < MAX_JUMPS)
+		can_jump = (jump_count < 1)
 
 	if can_jump and jump_buffer_timer > 0.0:
 		velocity.y = JUMP_VELOCITY
@@ -142,6 +161,8 @@ func _physics_process(delta: float) -> void:
 		velocity.x = WALL_JUMP_HORIZONTAL_BOOST * -sign(Input.get_axis("move_left", "move_right"))
 		animated_sprite_2d.flip_h = velocity.x < 0
 		is_wall_sliding = false
+		jump_count = 1  
+		jump_buffer_timer = 0.0  
 
 	# --- HORIZONTAL MOVEMENT ---
 	var direction := Input.get_axis("move_left", "move_right")
@@ -154,11 +175,8 @@ func _physics_process(delta: float) -> void:
 
 	if direction > 0.0:
 		animated_sprite_2d.flip_h = false
-		_position_hitboxes_ahead()
 	elif direction < 0.0:
 		animated_sprite_2d.flip_h = true
-		_position_hitboxes_ahead()
-
 
 	var accel: float
 	if is_on_floor():
@@ -194,25 +212,9 @@ func _physics_process(delta: float) -> void:
 	
 	if is_dashing:
 		velocity.y = 0
-		
-	# -- ATTACK LOGIC -- 
-	if direction != 0:
-		facing = Vector2(sign(direction), 0)
-# --- ATTACK FUNCTIONS ---
-func start_light_attack_animation():
-	attacking = true
-	animated_sprite_2d.play("light_punch")
-	animated_sprite_2d.frame = 0
 
-func start_heavy_attack_animation():
-	attacking = true
-	animated_sprite_2d.play("heavy_punch")
-	animated_sprite_2d.frame = 0
-
-func _on_animation_finished() -> void:
-	if animated_sprite_2d.animation in ["light_punch", "heavy_punch"]:
-		attacking = false
-		animated_sprite_2d.play("new_idle")
+	
+	
 	
 func _process(_delta: float) -> void:
 	if not is_wall_sliding and is_on_floor() and not attacking and Input.is_action_just_pressed("attack"):
@@ -282,34 +284,30 @@ func _on_dash_cooldown_timeout() -> void:
 	can_dash = true
 
 
+# --- SPIKE COLLISION CHECK ---
+func check_spike_collision() -> void:
+	# Get the spike tilemap layer from the scene
+	var spike_layer = get_tree().get_first_node_in_group("spikes")
+	if spike_layer and spike_layer is TileMapLayer:
+		# Convert player position to tile coordinates
+		var tile_pos = spike_layer.local_to_map(spike_layer.to_local(global_position))
+		# Check if there's a tile at the player's position
+		var tile_data = spike_layer.get_cell_tile_data(tile_pos)
+		if tile_data != null:
+			print("Player is on a spike tile!")
+			call_deferred("reload_scene")
+
+
 func _on_hurt_box_body_entered(body: Node2D) -> void:
 	if body.is_in_group("enemy"):
 		print("damage taken")
 		health -= 1
 
-func _hitbox_off_all() -> void:
-	lp_hitbox.monitoring = false
-	lp_hitbox.monitorable = false
-	hp_hitbox.monitoring = false
-	hp_hitbox.monitorable = false
-	
-func _position_hitboxes_ahead() -> void:
-	# warning pops up because position isnt technically needed, but its
-	# easier to read so keep it
-	@warning_ignore("shadowed_variable_base_class")
-	var position := Vector2(HITBOX_OFFSET * facing.x, 0)
-	hp_hitbox.position = position
-	lp_hitbox.position = position
 
-func _on_light_area_entered(area: Area2D) -> void:
-	_register_hit(area, LIGHT_DAMAGE)
-
-
-func _on_heavy_area_entered(area: Area2D) -> void:
-	_register_hit(area, HEAVY_DAMAGE)
-
-# damage variable to be used in future
-func _register_hit(area: Area2D, damage: float) -> void:
-	if area in hit_this_swing:
-		return
-	hit_this_swing[area] = true
+func _on_hurtbox_spike_body_entered(body: Node2D) -> void:
+	if body.is_in_group("spikes"):
+		print("Player touched spikes")
+		call_deferred("reload_scene") 
+		
+func reload_scene() -> void:
+	get_tree().reload_current_scene()
