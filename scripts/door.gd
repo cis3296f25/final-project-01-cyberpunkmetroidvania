@@ -4,11 +4,6 @@ extends Node2D
 @export var playerPosition: Vector2
 @export var jumpOnEnter: bool = false
 
-# LIMITS FOR NEXT ROOM
-@export var limit_left: int
-@export var limit_top: int
-@export var limit_right: int
-@export var limit_bottom: int
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -29,4 +24,6 @@ func _on_body_entered(body: Node2D) -> void:
 		RoomChangeGlobal.playerDone = false
 		RoomChangeGlobal.playerPosition = playerPosition
 		RoomChangeGlobal.jumpOnEnter = jumpOnEnter
+		RoomChangeGlobal.has_double_jump = body.has_double_jump
+		RoomChangeGlobal.has_wall_jump = body.has_wall_jump
 		get_tree().call_deferred("change_scene_to_file", nextRoom)
