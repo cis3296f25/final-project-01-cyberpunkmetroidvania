@@ -97,6 +97,9 @@ func _physics_process(delta: float) -> void:
 	#if is_dashing:
 		#return
 
+	# --- CHECK FOR SPIKE COLLISION ---
+	check_spike_collision()
+
 	# --- GRAVITY / COYOTE / BUFFER JUMP ---
 	if is_on_floor():
 		coyote_timer = COYOTE_TIME
@@ -262,7 +265,30 @@ func _on_dash_cooldown_timeout() -> void:
 	can_dash = true
 
 
+# --- SPIKE COLLISION CHECK ---
+func check_spike_collision() -> void:
+	# Get the spike tilemap layer from the scene
+	var spike_layer = get_tree().get_first_node_in_group("spikes")
+	if spike_layer and spike_layer is TileMapLayer:
+		# Convert player position to tile coordinates
+		var tile_pos = spike_layer.local_to_map(spike_layer.to_local(global_position))
+		# Check if there's a tile at the player's position
+		var tile_data = spike_layer.get_cell_tile_data(tile_pos)
+		if tile_data != null:
+			print("Player is on a spike tile!")
+			call_deferred("reload_scene")
+
+
 func _on_hurt_box_body_entered(body: Node2D) -> void:
 	if body.is_in_group("enemy"):
 		print("damage taken")
 		health -= 1
+
+
+func _on_hurtbox_spike_body_entered(body: Node2D) -> void:
+	if body.is_in_group("spikes"):
+		print("Player touched spikes")
+		call_deferred("reload_scene") 
+		
+func reload_scene() -> void:
+	get_tree().reload_current_scene()
