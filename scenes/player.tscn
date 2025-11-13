@@ -1,4 +1,4 @@
-[gd_scene load_steps=46 format=3 uid="uid://b3hjlgmu1lcvb"]
+[gd_scene load_steps=45 format=3 uid="uid://b3hjlgmu1lcvb"]
 
 [ext_resource type="Script" uid="uid://vjcslsv21g6e" path="res://scripts/player.gd" id="1_g2els"]
 [ext_resource type="Texture2D" uid="uid://bafdoghcag2g0" path="res://assets/sprites/steve anims/steve anims 1.2.png" id="2_smehm"]
@@ -310,12 +310,8 @@ radius = 8.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_holxr"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_qhqgy"]
-size = Vector2(21, 28.5)
-
 [node name="Player" type="CharacterBody2D"]
 collision_layer = 3
-collision_mask = 129
 script = ExtResource("1_g2els")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
@@ -360,15 +356,6 @@ shape = SubResource("CircleShape2D_g5jhy")
 position = Vector2(1, 0)
 shape = SubResource("CircleShape2D_holxr")
 
-[node name="HurtboxSpike" type="Area2D" parent="." groups=["spikes"]]
-collision_mask = 128
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxSpike" groups=["spikes"]]
-position = Vector2(2, 1)
-shape = SubResource("RectangleShape2D_qhqgy")
-debug_color = Color(0.98322886, 0, 0.3592717, 0.41960785)
-
 [connection signal="timeout" from="dashCooldown" to="." method="_on_dash_cooldown_timeout"]
 [connection signal="timeout" from="dashDuration" to="." method="_on_dash_duration_timeout"]
 [connection signal="body_entered" from="HurtBox" to="." method="_on_hurt_box_body_entered"]
-[connection signal="body_entered" from="HurtboxSpike" to="." method="_on_hurtbox_spike_body_entered"]

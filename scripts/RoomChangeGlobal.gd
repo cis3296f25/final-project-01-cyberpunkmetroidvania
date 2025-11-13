@@ -6,9 +6,6 @@ var playerDone: bool = true
 var playerPosition: Vector2
 var jumpOnEnter: bool
 
-var has_double_jump := false
-var has_wall_jump := false
-
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

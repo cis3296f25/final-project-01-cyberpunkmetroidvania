@@ -1,4 +1,4 @@
-extends Node2D
+extends CharacterBody2D
 
 # if hes invincible why can i see him
 # i made a steak mark
