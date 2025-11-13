@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=4 uid="uid://bl4xf88rcefnd"]
+[gd_scene load_steps=10 format=4 uid="uid://bl4xf88rcefnd"]
 
 [ext_resource type="TileSet" uid="uid://cde4wxs14s2l0" path="res://assets/tilesets/back_fore_32_set.tres" id="1_0hwry"]
 [ext_resource type="PackedScene" uid="uid://cp26yrfiml1p2" path="res://scenes/level stuff/platform.tscn" id="2_ktm03"]
@@ -12,6 +12,9 @@ size = Vector2(64, 64)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lsxps"]
 size = Vector2(64, 64)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0hwry"]
+size = Vector2(63, 64)
 
 [node name="Room 2" type="Node2D"]
 
@@ -77,3 +80,12 @@ limit_bottom = 220
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Door"]
 shape = SubResource("RectangleShape2D_lsxps")
+
+[node name="Door3" parent="." instance=ExtResource("3_lsxps")]
+position = Vector2(574, 256)
+nextRoom = "res://scenes/rooms/bossRoom.tscn"
+playerPosition = Vector2(10, 280)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Door3"]
+position = Vector2(1.5, 0)
+shape = SubResource("RectangleShape2D_0hwry")
