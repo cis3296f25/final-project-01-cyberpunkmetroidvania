@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://455chnn75dsd"]
+[gd_scene load_steps=11 format=3 uid="uid://455chnn75dsd"]
 
 [ext_resource type="Script" uid="uid://cvxq514mjt5p7" path="res://scripts/cyborg_slime.gd" id="1_3clqj"]
 [ext_resource type="Texture2D" uid="uid://bnqlc7solfiep" path="res://assets/sprites/cyborg_slime_purple.png" id="1_suvgo"]
@@ -43,6 +43,9 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_nmw48"]
 size = Vector2(8, 11.5)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3clqj"]
+size = Vector2(8, 12)
+
 [node name="CyborgSlime" type="Node2D" groups=["enemy"]]
 script = ExtResource("1_3clqj")
 
@@ -58,3 +61,10 @@ frame_progress = 0.2980482
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
 position = Vector2(0, -6.25)
 shape = SubResource("RectangleShape2D_nmw48")
+
+[node name="HurtBox" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox"]
+position = Vector2(0, -6)
+shape = SubResource("RectangleShape2D_3clqj")
+debug_color = Color(0.96862745, 0.015686275, 0, 0.41960785)

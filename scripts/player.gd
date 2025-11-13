@@ -27,19 +27,24 @@ const DASH_DISTANCE := 150.0       # how far to move instantly
 const DASH_DURATION := 0.15        # how long invincibility lasts
 const DASH_COOLDOWN := 0.5         # cooldown before next dash
 
+# -- ATTACK --
+var attacking := false
+const HEAVY_DAMAGE = 1.75
+const LIGHT_DAMAGE = 1.00
+var hit_this_swing := {}
+const HITBOX_OFFSET := 8.0
+
 # --- INTERNAL STATE VARIABLES ---
 var coyote_timer: float = 0.0
 var jump_buffer_timer: float = 0.0
 var jump_count = 0
 const MAX_JUMPS = 2
+var facing := Vector2.RIGHT
 
-var attacking := false
 var is_wall_sliding := false
 var is_dashing := false
 var can_dash := true
 
-const HEAVY_DAMAGE = 1.75
-const LIGHT_DAMAGE = 1.00
 
 var health = 10
 
@@ -47,6 +52,12 @@ var health = 10
 @onready var healthbar = $HealthBar
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
 @onready var collision_shape: CollisionShape2D = $HurtBox/CollisionShape2D
+
+# -- ATTACK NODES --
+@onready var lp_hitbox: Area2D = $LPHitbox
+@onready var lp_hitbox_shape: CollisionShape2D = $LPHitbox/LightPunchHitbox
+@onready var hp_hitbox: Area2D = $HPHitbox
+@onready var hp_hitbox_shape: CollisionShape2D = $HPHitbox/HeavyPunchHitbox
 
 @onready var dashCooldown: Timer = $dashCooldown
 @onready var dashDuration: Timer = $dashDuration
@@ -57,9 +68,15 @@ func _ready() -> void:
 	
 	add_to_group("player")
 	
+	_hitbox_off_all()
+	lp_hitbox.area_entered.connect(_on_light_area_entered)
+	hp_hitbox.area_entered.connect(_on_heavy_area_entered)
+	_position_hitboxes_ahead()
+
 	
 	healthbar.initHealth(health)
 
+	# -- ATTACK ANIMATION LOGIC --
 	if animated_sprite_2d.sprite_frames:
 		animated_sprite_2d.sprite_frames.set_animation_loop("light_punch", false)
 		animated_sprite_2d.sprite_frames.set_animation_loop("heavy_punch", false)
@@ -74,22 +91,6 @@ func _ready() -> void:
 	
 	if RoomChangeGlobal.camDone:
 		RoomChangeGlobal.activate = false
-
-# --- ATTACK FUNCTIONS ---
-func start_light_attack_animation():
-	attacking = true
-	animated_sprite_2d.play("light_punch")
-	animated_sprite_2d.frame = 0
-
-func start_heavy_attack_animation():
-	attacking = true
-	animated_sprite_2d.play("heavy_punch")
-	animated_sprite_2d.frame = 0
-
-func _on_animation_finished() -> void:
-	if animated_sprite_2d.animation in ["light_punch", "heavy_punch"]:
-		attacking = false
-		animated_sprite_2d.play("new_idle")
 
 # --- MAIN PROCESS LOOP ---
 func _physics_process(delta: float) -> void:
@@ -153,8 +154,11 @@ func _physics_process(delta: float) -> void:
 
 	if direction > 0.0:
 		animated_sprite_2d.flip_h = false
+		_position_hitboxes_ahead()
 	elif direction < 0.0:
 		animated_sprite_2d.flip_h = true
+		_position_hitboxes_ahead()
+
 
 	var accel: float
 	if is_on_floor():
@@ -190,9 +194,25 @@ func _physics_process(delta: float) -> void:
 	
 	if is_dashing:
 		velocity.y = 0
+		
+	# -- ATTACK LOGIC -- 
+	if direction != 0:
+		facing = Vector2(sign(direction), 0)
+# --- ATTACK FUNCTIONS ---
+func start_light_attack_animation():
+	attacking = true
+	animated_sprite_2d.play("light_punch")
+	animated_sprite_2d.frame = 0
 
-	
-	
+func start_heavy_attack_animation():
+	attacking = true
+	animated_sprite_2d.play("heavy_punch")
+	animated_sprite_2d.frame = 0
+
+func _on_animation_finished() -> void:
+	if animated_sprite_2d.animation in ["light_punch", "heavy_punch"]:
+		attacking = false
+		animated_sprite_2d.play("new_idle")
 	
 func _process(_delta: float) -> void:
 	if not is_wall_sliding and is_on_floor() and not attacking and Input.is_action_just_pressed("attack"):
@@ -266,3 +286,30 @@ func _on_hurt_box_body_entered(body: Node2D) -> void:
 	if body.is_in_group("enemy"):
 		print("damage taken")
 		health -= 1
+
+func _hitbox_off_all() -> void:
+	lp_hitbox.monitoring = false
+	lp_hitbox.monitorable = false
+	hp_hitbox.monitoring = false
+	hp_hitbox.monitorable = false
+	
+func _position_hitboxes_ahead() -> void:
+	# warning pops up because position isnt technically needed, but its
+	# easier to read so keep it
+	@warning_ignore("shadowed_variable_base_class")
+	var position := Vector2(HITBOX_OFFSET * facing.x, 0)
+	hp_hitbox.position = position
+	lp_hitbox.position = position
+
+func _on_light_area_entered(area: Area2D) -> void:
+	_register_hit(area, LIGHT_DAMAGE)
+
+
+func _on_heavy_area_entered(area: Area2D) -> void:
+	_register_hit(area, HEAVY_DAMAGE)
+
+# damage variable to be used in future
+func _register_hit(area: Area2D, damage: float) -> void:
+	if area in hit_this_swing:
+		return
+	hit_this_swing[area] = true

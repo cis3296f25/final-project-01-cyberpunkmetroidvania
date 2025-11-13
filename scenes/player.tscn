@@ -348,13 +348,12 @@ shape = SubResource("RectangleShape2D_fjrip")
 [node name="LPHitbox" type="Area2D" parent="."]
 
 [node name="LightPunchHitbox" type="CollisionShape2D" parent="LPHitbox"]
-position = Vector2(10, 1)
 shape = SubResource("CircleShape2D_g5jhy")
 
 [node name="HPHitbox" type="Area2D" parent="."]
 
 [node name="HeavyPunchHitbox" type="CollisionShape2D" parent="HPHitbox"]
-position = Vector2(12, 3)
+position = Vector2(1, 0)
 shape = SubResource("CircleShape2D_holxr")
 
 [connection signal="timeout" from="dashCooldown" to="." method="_on_dash_cooldown_timeout"]
