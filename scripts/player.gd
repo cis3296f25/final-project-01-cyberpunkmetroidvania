@@ -105,6 +105,8 @@ func _physics_process(delta: float) -> void:
 		coyote_timer = COYOTE_TIME
 		jump_count = 0
 	else:
+		if coyote_timer > 0.0:
+			jump_count = 1
 		coyote_timer = max(coyote_timer - delta, 0.0)
 
 	if jump_buffer_timer > 0.0:
@@ -144,6 +146,8 @@ func _physics_process(delta: float) -> void:
 		velocity.x = WALL_JUMP_HORIZONTAL_BOOST * -sign(Input.get_axis("move_left", "move_right"))
 		animated_sprite_2d.flip_h = velocity.x < 0
 		is_wall_sliding = false
+		jump_count = 1  
+		jump_buffer_timer = 0.0  
 
 	# --- HORIZONTAL MOVEMENT ---
 	var direction := Input.get_axis("move_left", "move_right")
