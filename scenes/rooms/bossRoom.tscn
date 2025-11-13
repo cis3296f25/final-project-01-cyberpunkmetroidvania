@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=4 uid="uid://bv8jyv6bay2na"]
+[gd_scene load_steps=8 format=4 uid="uid://b8ru1ohnke6k"]
 
 [ext_resource type="TileSet" uid="uid://cde4wxs14s2l0" path="res://assets/tilesets/back_fore_32_set.tres" id="1_i0oxy"]
 [ext_resource type="TileSet" uid="uid://c5hms5rcydra0" path="res://assets/tilesets/mid_set.tres" id="2_8ewjy"]
@@ -29,11 +29,12 @@ tile_set = ExtResource("2_8ewjy")
 
 [node name="DoorBack" type="TileMapLayer" parent="TileMap"]
 z_index = -3
+tile_map_data = PackedByteArray("AAAAAAgAAAAHAAcAAQAAAAcAAAAHAAYAAQA=")
 tile_set = ExtResource("1_i0oxy")
 
 [node name="DoorFront" type="TileMapLayer" parent="TileMap"]
 z_index = 3
-tile_map_data = PackedByteArray("AAAAAAgAAAAFAAcAAAAAAAcAAAAFAAYAAAA=")
+tile_map_data = PackedByteArray("AAAAAAgAAAAFAAcAAQAAAAcAAAAFAAYAAQA=")
 tile_set = ExtResource("1_i0oxy")
 
 [node name="FlairBack" type="TileMapLayer" parent="TileMap"]
@@ -45,6 +46,11 @@ tile_set = ExtResource("3_x07bo")
 position = Vector2(64, 263)
 
 [node name="PlayerCam" parent="Player" instance=ExtResource("5_k3fkp")]
+limit_left = 0
+limit_right = 672
+limit_bottom = 320
+limit_smoothed = false
+position_smoothing_enabled = false
 
 [node name="Door" parent="." instance=ExtResource("6_errkn")]
 position = Vector2(-33, 257)
