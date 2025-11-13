@@ -43,6 +43,10 @@ const LIGHT_DAMAGE = 1.00
 
 var health = 10
 
+# --- ABILITY CHECKS ---
+var has_wall_jump := false
+var has_double_jump := false
+
 # --- NODE REFERENCES ---
 @onready var healthbar = $HealthBar
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
@@ -74,6 +78,9 @@ func _ready() -> void:
 	
 	if RoomChangeGlobal.camDone:
 		RoomChangeGlobal.activate = false
+		
+	has_double_jump = RoomChangeGlobal.has_double_jump
+	has_wall_jump = RoomChangeGlobal.has_wall_jump
 
 # --- ATTACK FUNCTIONS ---
 func start_light_attack_animation():
@@ -123,7 +130,7 @@ func _physics_process(delta: float) -> void:
 
 	# --- WALL SLIDING ---
 	is_wall_sliding = false
-	if is_on_wall() and not is_on_floor():
+	if is_on_wall() and not is_on_floor() and has_wall_jump:
 		is_wall_sliding = true
 		velocity.y = min(velocity.y, WALL_SLIDE_SPEED)
 		if animated_sprite_2d.animation != "wall_slide":
@@ -133,8 +140,10 @@ func _physics_process(delta: float) -> void:
 	var can_jump := false
 	if jump_count == 0:
 		can_jump = (is_on_floor() or coyote_timer > 0.0)
+	elif has_double_jump:
+		can_jump = (jump_count < MAX_JUMPS) #MAX_JUMPS
 	else:
-		can_jump = (jump_count < MAX_JUMPS)
+		can_jump = (jump_count < 1)
 
 	if can_jump and jump_buffer_timer > 0.0:
 		velocity.y = JUMP_VELOCITY
