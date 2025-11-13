@@ -45,7 +45,7 @@ tile_set = ExtResource("1_0hwry")
 position = Vector2(272, 176)
 
 [node name="Player" parent="." instance=ExtResource("4_ktm03")]
-position = Vector2(24, 16)
+position = Vector2(510, 7)
 
 [node name="PlayerCam" parent="Player" instance=ExtResource("4_lsxps")]
 limit_left = 0
@@ -76,4 +76,17 @@ limit_right = 544
 limit_bottom = 220
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Door"]
+shape = SubResource("RectangleShape2D_lsxps")
+
+[node name="Doorplat" parent="." instance=ExtResource("3_lsxps")]
+position = Vector2(208, 184)
+nextRoom = "res://scenes/rooms/platformRoom1.tscn"
+playerPosition = Vector2(-230, -10)
+limit_left = -97
+limit_top = -10000
+limit_right = 544
+limit_bottom = 220
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Doorplat"]
+position = Vector2(367, -184)
 shape = SubResource("RectangleShape2D_lsxps")
