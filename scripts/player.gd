@@ -330,7 +330,6 @@ func _on_hurt_box_body_entered(body: Node2D) -> void:
 			dir = Vector2.RIGHT
 		var src_pos: Vector2 = body.global_position
 		take_damage(1.0, dir, src_pos)
-	SoundController.play_hurt()
 	print("damage taken")
 	health -= 1
 
@@ -378,6 +377,7 @@ func _on_invuln_timeout() -> void:
 func _take_damage(damage: float, hit_dir: Vector2, source_pos: Vector2) -> void:
 	invuln = true
 	invuln_timer.start(invuln_time)
+	SoundController.play_hurt()
 
 	health -= int(ceil(damage))
 	if is_instance_valid(healthbar) and healthbar.has_method("updateHealth"):
