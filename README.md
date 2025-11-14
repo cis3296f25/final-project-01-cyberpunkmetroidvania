@@ -1,28 +1,18 @@
-# Project Name
-Put here a short paragraph describing your project. 
-Adding an screenshot or a mockup of your application in action would be nice.  
+# Cyperpunk MetroidVania
+This project is a video game application that implements different pieces of inspiration from specific games. It is a Metroidvania, a 2-d platforming game that has the user collect new power-ups as they progress through the game. The player will be able to attack the enemies throughout the game with a wide array of moves through street fighter inspired motion inputs. This will unlock ways to interact with the world and take on new foes the player will find throughout the game.
 
-![This is a screenshot.](images.png)
+# Project Board
+[Link to our Project Board!](https://trello.com/b/vyxm8X3B/cyberpunk-metroidvania)
+
 # How to run
-Provide here instructions on how to use your application.   
-- Download the latest binary from the Release section on the right on GitHub.  
-- On the command line uncompress using
-```
-tar -xzf  
-```
-- On the command line run with
-```
-./hello
-```
-- You will see Hello World! on your terminal. 
-
-# How to contribute
-Follow this project board to know the latest status of the project: [http://...]([http://...])  
+- Download the latest disk image from the Release section on the right on GitHub.  
+- Open and run the software
+- ONLY WINDOWS IS SUPPORTED FOR NOW
 
 ### How to build
-- Use this github repository: ... 
-- Specify what branch to use for a more stable release or for cutting edge development.  
-- Use InteliJ 11
-- Specify additional library to download if needed 
-- What file and target to compile and run. 
-- What is expected to happen when the app start. 
+- Use this GitHub repository: [Repo Link](https://github.com/cis3296f25/final-project-01-cyberpunkmetroidvania)
+- Use the main branch, and download the executable
+- The game should begin when it is started
+
+# Testing
+Our game has a testing document that is edited as we add additional features. It should explain how to test the features we add over the sprints. The link to this document is here - [Testing Document Link](https://docs.google.com/document/d/1nsNFxoSic86eF_vWor_jhSJ-QanDUXHlHHavtpuTk88/edit?tab=t.0)
