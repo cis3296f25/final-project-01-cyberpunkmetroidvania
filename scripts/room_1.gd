@@ -31,3 +31,7 @@ func _process(delta: float) -> void:
 		#print("Door 2 entered")
 		#get_tree().call_deferred("change_scene_to_file", "res://scenes/room_2.tscn")
 		
+
+
+func _on_area_2d_body_entered(body: Node2D) -> void:
+	pass # Replace with function body.

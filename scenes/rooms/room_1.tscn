@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=4 uid="uid://ns3pwpuaqeh2"]
+[gd_scene load_steps=18 format=4 uid="uid://ns3pwpuaqeh2"]
 
 [ext_resource type="Script" uid="uid://c08aqxxpbp5xj" path="res://scripts/room_1.gd" id="1_irjyx"]
 [ext_resource type="PackedScene" uid="uid://b3hjlgmu1lcvb" path="res://scenes/player.tscn" id="2_xhekj"]
@@ -10,6 +10,8 @@
 [ext_resource type="TileSet" uid="uid://n8yvtghn021u" path="res://assets/tilesets/back_fore_16_set.tres" id="5_wtcj1"]
 [ext_resource type="PackedScene" uid="uid://455chnn75dsd" path="res://scenes/cyborg_slime.tscn" id="6_0akh5"]
 [ext_resource type="PackedScene" uid="uid://cc03ott63xw1y" path="res://scenes/SoundController.tscn" id="10_wtcj1"]
+[ext_resource type="Texture2D" uid="uid://bnw1faqo2vr1b" path="res://Untitled.png" id="11_38fm3"]
+[ext_resource type="AudioStream" uid="uid://f56k4xf175uk" path="res://assets/sounds/Powerup_collect.wav" id="12_wrk0s"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0akh5"]
 size = Vector2(64, 64)
@@ -19,6 +21,36 @@ size = Vector2(64, 64)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ow1e4"]
 size = Vector2(65, 64)
+
+[sub_resource type="GDScript" id="GDScript_wrk0s"]
+resource_name = "PowerupScript"
+script/source = "extends Area2D
+
+@export var health_increase: int = 3
+@export var damage_increase: int = 3
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+func _on_body_entered(body: Node2D) -> void:
+	if body.is_in_group(\"player\") and body.has_method(\"apply_permanent_upgrade\"):
+		body.apply_permanent_upgrade(health_increase, damage_increase)
+		$PickupSound.play()
+		
+		# hide sprite + disable collision
+		$Sprite2D.visible = false
+		$CollisionShape2D.disabled = true
+		
+		# delay freeing the node until the sound finishes
+		await $PickupSound.finished
+		
+		queue_free()
+"
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_rgk8g"]
+radius = 15.033297
 
 [node name="Room 1" type="Node2D"]
 script = ExtResource("1_irjyx")
@@ -110,3 +142,21 @@ position = Vector2(-0.5, -1)
 shape = SubResource("RectangleShape2D_ow1e4")
 
 [node name="SoundController" parent="." instance=ExtResource("10_wtcj1")]
+
+[node name="Area2D" type="Area2D" parent="."]
+position = Vector2(324, -56)
+script = SubResource("GDScript_wrk0s")
+
+[node name="Sprite2D" type="Sprite2D" parent="Area2D"]
+position = Vector2(0, 2)
+scale = Vector2(0.27659574, 0.28947368)
+texture = ExtResource("11_38fm3")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(-1, 3)
+shape = SubResource("CircleShape2D_rgk8g")
+
+[node name="PickupSound" type="AudioStreamPlayer2D" parent="Area2D"]
+stream = ExtResource("12_wrk0s")
+
+[connection signal="body_entered" from="Area2D" to="Area2D" method="_on_body_entered"]
