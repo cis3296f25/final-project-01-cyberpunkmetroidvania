@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=4 uid="uid://bl4xf88rcefnd"]
+[gd_scene load_steps=11 format=4 uid="uid://bl4xf88rcefnd"]
 
 [ext_resource type="TileSet" uid="uid://cde4wxs14s2l0" path="res://assets/tilesets/back_fore_32_set.tres" id="1_0hwry"]
 [ext_resource type="PackedScene" uid="uid://cp26yrfiml1p2" path="res://scenes/level stuff/platform.tscn" id="2_ktm03"]
@@ -13,6 +13,9 @@ size = Vector2(64, 64)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lsxps"]
 size = Vector2(64, 64)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_nu3hr"]
+size = Vector2(65, 66)
 
 [node name="Room 2" type="Node2D"]
 
@@ -79,3 +82,12 @@ position = Vector2(367, -184)
 shape = SubResource("RectangleShape2D_lsxps")
 
 [node name="SoundController" parent="." instance=ExtResource("7_nu3hr")]
+
+[node name="DoorBoss" parent="." instance=ExtResource("3_lsxps")]
+position = Vector2(574, 258)
+nextRoom = "res://scenes/rooms/bossRoom.tscn"
+playerPosition = Vector2(10, 280)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DoorBoss"]
+position = Vector2(0.5, -2)
+shape = SubResource("RectangleShape2D_nu3hr")
