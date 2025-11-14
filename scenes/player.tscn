@@ -344,21 +344,28 @@ wait_time = 0.2
 one_shot = true
 
 [node name="HurtBox" type="Area2D" parent="."]
+light_mask = 9
+collision_mask = 8
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox"]
 position = Vector2(1.5, -1.125)
 shape = SubResource("RectangleShape2D_fjrip")
 
 [node name="LPHitbox" type="Area2D" parent="."]
+light_mask = 5
+visibility_layer = 2
+collision_layer = 2
+collision_mask = 4
 
 [node name="LightPunchHitbox" type="CollisionShape2D" parent="LPHitbox"]
-position = Vector2(10, 1)
 shape = SubResource("CircleShape2D_g5jhy")
 
 [node name="HPHitbox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 4
 
 [node name="HeavyPunchHitbox" type="CollisionShape2D" parent="HPHitbox"]
-position = Vector2(12, 3)
+position = Vector2(1, 0)
 shape = SubResource("CircleShape2D_holxr")
 
 [node name="HurtboxSpike" type="Area2D" parent="." groups=["spikes"]]
@@ -368,6 +375,8 @@ collision_mask = 128
 position = Vector2(2, 1)
 shape = SubResource("RectangleShape2D_qhqgy")
 debug_color = Color(0.98322886, 0, 0.3592717, 0.41960785)
+
+[node name="InvulnTimer" type="Timer" parent="."]
 
 [connection signal="timeout" from="dashCooldown" to="." method="_on_dash_cooldown_timeout"]
 [connection signal="timeout" from="dashDuration" to="." method="_on_dash_duration_timeout"]
