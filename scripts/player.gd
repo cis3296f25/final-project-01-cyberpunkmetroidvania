@@ -330,9 +330,9 @@ func _on_hurt_box_body_entered(body: Node2D) -> void:
 			dir = Vector2.RIGHT
 		var src_pos: Vector2 = body.global_position
 		take_damage(1.0, dir, src_pos)
-    SoundController.play_hurt()
-		print("damage taken")
-		health -= 1
+	SoundController.play_hurt()
+	print("damage taken")
+	health -= 1
 
 	if health <= 0:
 		call_deferred("reload_scene")
