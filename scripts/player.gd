@@ -146,6 +146,7 @@ func _physics_process(delta: float) -> void:
 		can_jump = (jump_count < 1)
 
 	if can_jump and jump_buffer_timer > 0.0:
+		SoundController.play_jump()
 		velocity.y = JUMP_VELOCITY
 		jump_count += 1
 		jump_buffer_timer = 0.0
@@ -262,6 +263,7 @@ func _process(_delta: float) -> void:
 
 # --- DASH FUNCTION ---
 func perform_dash() -> void:
+	SoundController.play_dash()
 	is_dashing = true
 	can_dash = false
 	collision_shape.disabled = true  # Disable hitbox (invincible)
@@ -288,19 +290,24 @@ func check_spike_collision() -> void:
 		# Check if there's a tile at the player's position
 		var tile_data = spike_layer.get_cell_tile_data(tile_pos)
 		if tile_data != null:
+			SoundController.play_death()
 			print("Player is on a spike tile!")
+			await get_tree().create_timer(0.15).timeout
 			call_deferred("reload_scene")
 
 
 func _on_hurt_box_body_entered(body: Node2D) -> void:
 	if body.is_in_group("enemy"):
+		SoundController.play_hurt()
 		print("damage taken")
 		health -= 1
 
 
 func _on_hurtbox_spike_body_entered(body: Node2D) -> void:
 	if body.is_in_group("spikes"):
+		SoundController.play_death()
 		print("Player touched spikes")
+		await get_tree().create_timer(0.15).timeout
 		call_deferred("reload_scene") 
 		
 func reload_scene() -> void:

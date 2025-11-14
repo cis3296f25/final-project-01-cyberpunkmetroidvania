@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=4 uid="uid://d3s2sjjwsobqv"]
+[gd_scene load_steps=31 format=4 uid="uid://d3s2sjjwsobqv"]
 
 [ext_resource type="TileSet" uid="uid://cde4wxs14s2l0" path="res://assets/tilesets/back_fore_32_set.tres" id="1_kujaw"]
 [ext_resource type="TileSet" uid="uid://n8yvtghn021u" path="res://assets/tilesets/back_fore_16_set.tres" id="2_q5tty"]
@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://bmar3kpdyosnu" path="res://scenes/level stuff/door.tscn" id="7_cdooi"]
 [ext_resource type="PackedScene" uid="uid://cs04855ow3t40" path="res://scenes/coin.tscn" id="9_cdooi"]
 [ext_resource type="PackedScene" uid="uid://455chnn75dsd" path="res://scenes/cyborg_slime.tscn" id="9_rxrds"]
+[ext_resource type="PackedScene" uid="uid://cc03ott63xw1y" path="res://scenes/SoundController.tscn" id="10_rxrds"]
 
 [sub_resource type="Animation" id="Animation_y0b2v"]
 length = 0.001
@@ -383,17 +384,11 @@ position = Vector2(-228, -26)
 limit_left = -353
 limit_right = 977
 limit_bottom = 384
-limit_smoothed = false
-position_smoothing_enabled = false
 
 [node name="Door" parent="." instance=ExtResource("7_cdooi")]
 position = Vector2(-32, 192)
 nextRoom = "res://scenes/rooms/room_2.tscn"
 playerPosition = Vector2(510, 20)
-limit_left = -97
-limit_top = -10000
-limit_right = 544
-limit_bottom = 220
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Door"]
 position = Vector2(-287, -223)
@@ -419,3 +414,5 @@ autoplay = "elevator1"
 
 [node name="Coin" parent="." instance=ExtResource("9_cdooi")]
 position = Vector2(175, -223)
+
+[node name="SoundController" parent="." instance=ExtResource("10_rxrds")]
