@@ -164,6 +164,7 @@ func _physics_process(delta: float) -> void:
 		can_jump = (jump_count < 1)
 
 	if can_jump and jump_buffer_timer > 0.0:
+		SoundController.play_jump()
 		velocity.y = JUMP_VELOCITY
 		jump_count += 1
 		jump_buffer_timer = 0.0
@@ -293,6 +294,7 @@ func _on_animation_finished() -> void:
 
 # --- DASH ---
 func perform_dash() -> void:
+	SoundController.play_dash()
 	is_dashing = true
 	can_dash = false
 	collision_shape.disabled = true
@@ -313,6 +315,9 @@ func check_spike_collision() -> void:
 		var tile_pos = spike_layer.local_to_map(spike_layer.to_local(global_position))
 		var tile_data = spike_layer.get_cell_tile_data(tile_pos)
 		if tile_data != null:
+			SoundController.play_death()
+			print("Player is on a spike tile!")
+			await get_tree().create_timer(0.15).timeout
 			call_deferred("reload_scene")
 
 # -- PLAYER HURTBOX --
@@ -325,6 +330,12 @@ func _on_hurt_box_body_entered(body: Node2D) -> void:
 			dir = Vector2.RIGHT
 		var src_pos: Vector2 = body.global_position
 		take_damage(1.0, dir, src_pos)
+    SoundController.play_hurt()
+		print("damage taken")
+		health -= 1
+
+	if health <= 0:
+		call_deferred("reload_scene")
 
 # -- Hitbox turnoff --
 func _hitbox_off_all() -> void:
@@ -391,13 +402,14 @@ func _take_damage(damage: float, hit_dir: Vector2, source_pos: Vector2) -> void:
 	var V := -80.0
 	velocity = Vector2(kb.x * H, V)
 
-	if health <= 0:
-		call_deferred("reload_scene")
 
 # --- MISC ---
 func _on_hurtbox_spike_body_entered(body: Node2D) -> void:
 	if body.is_in_group("spikes"):
-		call_deferred("reload_scene")
-
+		SoundController.play_death()
+		print("Player touched spikes")
+		await get_tree().create_timer(0.15).timeout
+		call_deferred("reload_scene") 
+		
 func reload_scene() -> void:
 	get_tree().reload_current_scene()

@@ -1,0 +1,57 @@
+[gd_scene load_steps=9 format=3 uid="uid://dh3x6lscraayp"]
+
+[ext_resource type="Texture2D" uid="uid://b8wdwkysdiw1g" path="res://assets/sprites/mewtwoTempSprite.png" id="1_neq0i"]
+[ext_resource type="PackedScene" uid="uid://btvetxn3a0nfn" path="res://scenes/level stuff/killzone.tscn" id="2_jncid"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qnbj4"]
+atlas = ExtResource("1_neq0i")
+region = Rect2(150, 0, 75, 71)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r3bxh"]
+atlas = ExtResource("1_neq0i")
+region = Rect2(225, 0, 75, 71)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wqpjq"]
+atlas = ExtResource("1_neq0i")
+region = Rect2(300, 0, 75, 71)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2cdgk"]
+atlas = ExtResource("1_neq0i")
+region = Rect2(375, 0, 75, 71)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_qsl3t"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qnbj4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r3bxh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wqpjq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2cdgk")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2avx2"]
+size = Vector2(75, 72)
+
+[node name="Boss" type="Node2D"]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(1, -36)
+sprite_frames = SubResource("SpriteFrames_qsl3t")
+autoplay = "default"
+frame_progress = 0.94674367
+
+[node name="Killzone" parent="." instance=ExtResource("2_jncid")]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Killzone"]
+position = Vector2(0.5, -36)
+shape = SubResource("RectangleShape2D_2avx2")
