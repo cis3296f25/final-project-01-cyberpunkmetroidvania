@@ -28,8 +28,8 @@ const DASH_COOLDOWN := 0.5
 
 # --- ATTACK ---
 var attacking := false
-const HEAVY_DAMAGE = 1.75
-const LIGHT_DAMAGE = 1.00
+var HEAVY_DAMAGE = 1.75
+var LIGHT_DAMAGE = 1.00
 var hit_this_swing: Dictionary = {}
 const HITBOX_OFFSET := 8.0
 
@@ -44,7 +44,8 @@ var is_wall_sliding := false
 var is_dashing := false
 var can_dash := true
 
-var health = 10
+var max_health = 10
+var health = max_health
 
 # --- ABILITIES ---
 var has_wall_jump := false
@@ -71,6 +72,14 @@ var invuln := false
 
 @onready var dashCooldown: Timer = $dashCooldown
 @onready var dashDuration: Timer = $dashDuration
+
+# --- UPGRADE ---
+func apply_permanent_upgrade(health_increase: int, damage_increase: int) -> void:
+	
+	max_health += health_increase
+	health = max_health
+	LIGHT_DAMAGE+=damage_increase
+	HEAVY_DAMAGE+=damage_increase
 
 # --- READY ---
 func _ready() -> void:
