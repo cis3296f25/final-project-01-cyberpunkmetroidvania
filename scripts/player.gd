@@ -32,6 +32,7 @@ const HEAVY_DAMAGE = 1.75
 const LIGHT_DAMAGE = 1.00
 var hit_this_swing: Dictionary = {}
 const HITBOX_OFFSET := 8.0
+var is_shooting := false
 
 # --- INTERNAL STATE ---
 var coyote_timer: float = 0.0
@@ -39,6 +40,8 @@ var jump_buffer_timer: float = 0.0
 var jump_count = 0
 const MAX_JUMPS = 2
 var facing := Vector2.RIGHT
+var idle_timer = Timer.new()
+#   ^ timer for idle animation after gun is shot
 
 var is_wall_sliding := false
 var is_dashing := false
@@ -108,6 +111,8 @@ func _ready() -> void:
 	if animated_sprite_2d.sprite_frames:
 		animated_sprite_2d.sprite_frames.set_animation_loop("light_punch", false)
 		animated_sprite_2d.sprite_frames.set_animation_loop("heavy_punch", false)
+		animated_sprite_2d.sprite_frames.set_animation_loop("shoot", false)
+		animated_sprite_2d.sprite_frames.set_animation_loop("shoot_&_walk", false)
 	animated_sprite_2d.animation_finished.connect(_on_animation_finished)
 
 	# Room/ability stuff
@@ -121,6 +126,14 @@ func _ready() -> void:
 
 	has_double_jump = RoomChangeGlobal.has_double_jump
 	has_wall_jump = RoomChangeGlobal.has_wall_jump
+	
+	# shooting timer
+	idle_timer.one_shot = true
+	idle_timer.wait_time = 1
+	add_child(idle_timer)
+	var idle_cb := Callable(self, "_on_idle_timer_timeout")
+	if not idle_timer.timeout.is_connected(idle_cb):
+		idle_timer.timeout.connect(idle_cb)
 
 # --- PHYSICS ---
 func _physics_process(delta: float) -> void:
@@ -215,16 +228,22 @@ func _physics_process(delta: float) -> void:
 		velocity.x = 0.0
 	if is_dashing:
 		velocity.y = 0
+		
 
 	move_and_slide()
 
-# --- ATTACK INPUT / STATE ---
 func _process(_dt: float) -> void:
 	if not is_wall_sliding and is_on_floor() and not attacking and Input.is_action_just_pressed("attack"):
 		if Input.is_key_pressed(KEY_SHIFT):
 			start_heavy_attack_animation()
 		else:
 			start_light_attack_animation()
+	
+	if not is_wall_sliding and not is_shooting and Input.is_action_just_pressed("shoot"):
+		if velocity.x != 0:
+			start_walk_shoot_animation()
+		else:
+			start_shoot_animation()
 
 	# Animation fallbacks
 	if attacking:
@@ -240,8 +259,15 @@ func _process(_dt: float) -> void:
 		else:
 			if animated_sprite_2d.animation == "wall_slide":
 				animated_sprite_2d.stop()
-
-	if is_on_floor() and not attacking and not is_wall_sliding:
+	
+	if is_shooting:
+		if animated_sprite_2d.animation not in ["shoot", "shoot_&_walk"]:
+			if velocity.x != 0:
+				start_walk_shoot_animation()
+			else:
+				start_shoot_animation()
+	
+	if is_on_floor() and not attacking and not is_wall_sliding and not is_shooting:
 		if not is_dashing:
 			if abs(velocity.x) > 10.0:
 				if animated_sprite_2d.animation != "new_walk":
@@ -252,7 +278,7 @@ func _process(_dt: float) -> void:
 		else:
 			if animated_sprite_2d.animation != "dash":
 				animated_sprite_2d.play("dash")
-	elif not is_on_floor() and not is_wall_sliding:
+	elif not is_on_floor() and not is_wall_sliding and not is_shooting:
 		if not is_dashing:
 			if velocity.y > 0:
 				if animated_sprite_2d.animation != "fall":
@@ -285,11 +311,32 @@ func start_heavy_attack_animation():
 	lp_hitbox.monitorable = false
 	animated_sprite_2d.play("heavy_punch")
 	animated_sprite_2d.frame = 0
+	
+func start_shoot_animation():
+	is_shooting = true
+	animated_sprite_2d.play("shoot")
+	animated_sprite_2d.frame = 0
+	idle_timer.start()
+
+func start_walk_shoot_animation():
+	is_shooting = true
+	animated_sprite_2d.play("shoot_&_walk")
+	animated_sprite_2d.frame = 0
+	idle_timer.start()
+	
+func _on_idle_timer_timeout() -> void:
+	is_shooting = false
+	
+	if is_on_floor() and not attacking and not is_wall_sliding and not is_dashing:
+		if animated_sprite_2d.animation not in ["new_idle", "new_walk"]:
+			animated_sprite_2d.play("new_idle")
 
 func _on_animation_finished() -> void:
-	if animated_sprite_2d.animation in ["light_punch", "heavy_punch"]:
-		attacking = false
-		_hitbox_off_all()
+	match animated_sprite_2d.animation:
+		"light_punch", "heavy_punch":
+			attacking = false
+			_hitbox_off_all()
+	if not is_shooting and not attacking:
 		animated_sprite_2d.play("new_idle")
 
 # --- DASH ---
@@ -398,8 +445,8 @@ func _take_damage(damage: float, hit_dir: Vector2, source_pos: Vector2) -> void:
 		kb = kb.normalized()
 
 	# Apply knockback
-	var H := 220.0
-	var V := -80.0
+	var H := 600.0
+	var V := -150.0
 	velocity = Vector2(kb.x * H, V)
 
 
