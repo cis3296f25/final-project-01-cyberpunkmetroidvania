@@ -26,6 +26,9 @@ const DASH_DISTANCE := 150.0
 const DASH_DURATION := 0.15
 const DASH_COOLDOWN := 0.5
 
+# --- PHYSICS ---
+const PLAYER_MASS := 1.0  
+
 # --- ATTACK ---
 var attacking := false
 const HEAVY_DAMAGE = 1.75
@@ -46,10 +49,9 @@ var can_dash := true
 
 var health = 10
 
-# --- AIRBORNE TIME TRACKING ---
-var airborne_time: float = 0.0
-var was_airborne_long: bool = false
-const AIRBORNE_THRESHOLD: float = 1.2
+# --- LANDING SHAKE TRACKING ---
+var landing_velocity: float = 0.0
+const LANDING_VELOCITY_THRESHOLD: float = 600.0  # minimum velocity to trigger shake
 
 # --- ABILITIES ---
 var has_wall_jump := false
@@ -131,18 +133,21 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	check_spike_collision()
 
-	# track airborne time
+	# track landing velocity for kinetic energy shake
 	if not is_on_floor() and not is_wall_sliding:
-		airborne_time += delta
-		if airborne_time >= AIRBORNE_THRESHOLD:
-			was_airborne_long = true
+		landing_velocity = abs(velocity.y)
 	else:
-		# just landed - check if should shake
-		if was_airborne_long and is_on_floor():
-			trigger_camera_shake(5.0, 8.0) 
-			was_airborne_long = false
+		# just landed - check if should shake based on impact velocity
+		if is_on_floor() and landing_velocity >= LANDING_VELOCITY_THRESHOLD:
+			# calculate shake strength based on kinetic energy (KE = 0.5 * m * v^2)
+			# since mass is constant, we can simplify to just v^2 for comparison
+			var kinetic_energy = 0.5 * PLAYER_MASS * landing_velocity * landing_velocity
+			var threshold_energy = 0.5 * PLAYER_MASS * LANDING_VELOCITY_THRESHOLD * LANDING_VELOCITY_THRESHOLD
+			var kinetic_factor = kinetic_energy / threshold_energy
+			var shake_strength = clamp(kinetic_factor * 3.0, 2.0, 8.0)  # scale between 2-8
+			trigger_camera_shake(shake_strength, 8.0)
 		if is_on_floor():
-			airborne_time = 0.0
+			landing_velocity = 0.0
 
 	# Gravity / coyote / buffer
 	if is_on_floor():
