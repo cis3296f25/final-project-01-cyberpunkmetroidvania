@@ -71,6 +71,7 @@ var invuln := false
 
 @onready var dashCooldown: Timer = $dashCooldown
 @onready var dashDuration: Timer = $dashDuration
+@onready var pause_layer: CanvasLayer = $PauseLayer
 
 # --- READY ---
 func _ready() -> void:
@@ -121,6 +122,7 @@ func _ready() -> void:
 
 	has_double_jump = RoomChangeGlobal.has_double_jump
 	has_wall_jump = RoomChangeGlobal.has_wall_jump
+
 
 # --- PHYSICS ---
 func _physics_process(delta: float) -> void:
