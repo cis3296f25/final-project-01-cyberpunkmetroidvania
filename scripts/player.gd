@@ -46,6 +46,11 @@ var can_dash := true
 
 var health = 10
 
+# --- AIRBORNE TIME TRACKING ---
+var airborne_time: float = 0.0
+var was_airborne_long: bool = false
+const AIRBORNE_THRESHOLD: float = 1.2
+
 # --- ABILITIES ---
 var has_wall_jump := false
 var has_double_jump := false
@@ -125,6 +130,19 @@ func _ready() -> void:
 # --- PHYSICS ---
 func _physics_process(delta: float) -> void:
 	check_spike_collision()
+
+	# track airborne time
+	if not is_on_floor() and not is_wall_sliding:
+		airborne_time += delta
+		if airborne_time >= AIRBORNE_THRESHOLD:
+			was_airborne_long = true
+	else:
+		# just landed - check if should shake
+		if was_airborne_long and is_on_floor():
+			trigger_camera_shake(5.0, 8.0) 
+			was_airborne_long = false
+		if is_on_floor():
+			airborne_time = 0.0
 
 	# Gravity / coyote / buffer
 	if is_on_floor():
@@ -383,6 +401,9 @@ func _take_damage(damage: float, hit_dir: Vector2, source_pos: Vector2) -> void:
 	if is_instance_valid(healthbar) and healthbar.has_method("updateHealth"):
 		healthbar.updateHealth(health)
 
+	# trigger screen shake when taking damage
+	trigger_camera_shake(3.0, 8.0)  
+
 	# visual knockback
 	animated_sprite_2d.modulate = Color(1, 0.7, 0.7)
 
@@ -413,3 +434,9 @@ func _on_hurtbox_spike_body_entered(body: Node2D) -> void:
 		
 func reload_scene() -> void:
 	get_tree().reload_current_scene()
+
+# --- SCREEN SHAKE ---
+func trigger_camera_shake(strength: float = 10.0, decay: float = 5.0) -> void: #default parameters for fallbacks
+	var camera = get_viewport().get_camera_2d()
+	if camera and camera.has_method("apply_shake"):
+		camera.apply_shake(strength, decay)
