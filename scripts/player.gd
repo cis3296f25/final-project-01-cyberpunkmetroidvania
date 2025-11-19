@@ -26,6 +26,9 @@ const DASH_DISTANCE := 150.0
 const DASH_DURATION := 0.15
 const DASH_COOLDOWN := 0.5
 
+# --- PHYSICS ---
+const PLAYER_MASS := 1.0  
+
 # --- ATTACK ---
 var attacking := false
 var HEAVY_DAMAGE = 1.75
@@ -46,6 +49,10 @@ var can_dash := true
 
 var max_health = 10
 var health = max_health
+
+# --- LANDING SHAKE TRACKING ---
+var landing_velocity: float = 0.0
+const LANDING_VELOCITY_THRESHOLD: float = 600.0  # minimum velocity to trigger shake
 
 # --- ABILITIES ---
 var has_wall_jump := false
@@ -134,6 +141,22 @@ func _ready() -> void:
 # --- PHYSICS ---
 func _physics_process(delta: float) -> void:
 	check_spike_collision()
+
+	# track landing velocity for kinetic energy shake
+	if not is_on_floor() and not is_wall_sliding:
+		landing_velocity = abs(velocity.y)
+	else:
+		# just landed - check if should shake based on impact velocity
+		if is_on_floor() and landing_velocity >= LANDING_VELOCITY_THRESHOLD:
+			# calculate shake strength based on kinetic energy (KE = 0.5 * m * v^2)
+			# since mass is constant, we can simplify to just v^2 for comparison
+			var kinetic_energy = 0.5 * PLAYER_MASS * landing_velocity * landing_velocity
+			var threshold_energy = 0.5 * PLAYER_MASS * LANDING_VELOCITY_THRESHOLD * LANDING_VELOCITY_THRESHOLD
+			var kinetic_factor = kinetic_energy / threshold_energy
+			var shake_strength = clamp(kinetic_factor * 3.0, 2.0, 8.0)  # scale between 2-8
+			trigger_camera_shake(shake_strength, 8.0)
+		if is_on_floor():
+			landing_velocity = 0.0
 
 	# Gravity / coyote / buffer
 	if is_on_floor():
@@ -392,6 +415,9 @@ func _take_damage(damage: float, hit_dir: Vector2, source_pos: Vector2) -> void:
 	if is_instance_valid(healthbar) and healthbar.has_method("updateHealth"):
 		healthbar.updateHealth(health)
 
+	# trigger screen shake when taking damage
+	trigger_camera_shake(3.0, 8.0)  
+
 	# visual knockback
 	animated_sprite_2d.modulate = Color(1, 0.7, 0.7)
 
@@ -422,3 +448,9 @@ func _on_hurtbox_spike_body_entered(body: Node2D) -> void:
 		
 func reload_scene() -> void:
 	get_tree().reload_current_scene()
+
+# --- SCREEN SHAKE ---
+func trigger_camera_shake(strength: float = 10.0, decay: float = 5.0) -> void: #default parameters for fallbacks
+	var camera = get_viewport().get_camera_2d()
+	if camera and camera.has_method("apply_shake"):
+		camera.apply_shake(strength, decay)
