@@ -26,10 +26,13 @@ const DASH_DISTANCE := 150.0
 const DASH_DURATION := 0.15
 const DASH_COOLDOWN := 0.5
 
+# --- PHYSICS ---
+const PLAYER_MASS := 1.0  
+
 # --- ATTACK ---
 var attacking := false
-const HEAVY_DAMAGE = 1.75
-const LIGHT_DAMAGE = 1.00
+var HEAVY_DAMAGE = 1.75
+var LIGHT_DAMAGE = 1.00
 var hit_this_swing: Dictionary = {}
 const HITBOX_OFFSET := 8.0
 var is_shooting := false
@@ -47,7 +50,12 @@ var is_wall_sliding := false
 var is_dashing := false
 var can_dash := true
 
-var health = 10
+var max_health = 10
+var health = max_health
+
+# --- LANDING SHAKE TRACKING ---
+var landing_velocity: float = 0.0
+const LANDING_VELOCITY_THRESHOLD: float = 600.0  # minimum velocity to trigger shake
 
 # --- ABILITIES ---
 var has_wall_jump := false
@@ -74,6 +82,14 @@ var invuln := false
 
 @onready var dashCooldown: Timer = $dashCooldown
 @onready var dashDuration: Timer = $dashDuration
+
+# --- UPGRADE ---
+func apply_permanent_upgrade(health_increase: int, damage_increase: int) -> void:
+	
+	max_health += health_increase
+	health = max_health
+	LIGHT_DAMAGE+=damage_increase
+	HEAVY_DAMAGE+=damage_increase
 
 # --- READY ---
 func _ready() -> void:
@@ -138,6 +154,22 @@ func _ready() -> void:
 # --- PHYSICS ---
 func _physics_process(delta: float) -> void:
 	check_spike_collision()
+
+	# track landing velocity for kinetic energy shake
+	if not is_on_floor() and not is_wall_sliding:
+		landing_velocity = abs(velocity.y)
+	else:
+		# just landed - check if should shake based on impact velocity
+		if is_on_floor() and landing_velocity >= LANDING_VELOCITY_THRESHOLD:
+			# calculate shake strength based on kinetic energy (KE = 0.5 * m * v^2)
+			# since mass is constant, we can simplify to just v^2 for comparison
+			var kinetic_energy = 0.5 * PLAYER_MASS * landing_velocity * landing_velocity
+			var threshold_energy = 0.5 * PLAYER_MASS * LANDING_VELOCITY_THRESHOLD * LANDING_VELOCITY_THRESHOLD
+			var kinetic_factor = kinetic_energy / threshold_energy
+			var shake_strength = clamp(kinetic_factor * 3.0, 2.0, 8.0)  # scale between 2-8
+			trigger_camera_shake(shake_strength, 8.0)
+		if is_on_floor():
+			landing_velocity = 0.0
 
 	# Gravity / coyote / buffer
 	if is_on_floor():
@@ -377,7 +409,6 @@ func _on_hurt_box_body_entered(body: Node2D) -> void:
 			dir = Vector2.RIGHT
 		var src_pos: Vector2 = body.global_position
 		take_damage(1.0, dir, src_pos)
-	SoundController.play_hurt()
 	print("damage taken")
 	health -= 1
 
@@ -425,10 +456,14 @@ func _on_invuln_timeout() -> void:
 func _take_damage(damage: float, hit_dir: Vector2, source_pos: Vector2) -> void:
 	invuln = true
 	invuln_timer.start(invuln_time)
+	SoundController.play_hurt()
 
 	health -= int(ceil(damage))
 	if is_instance_valid(healthbar) and healthbar.has_method("updateHealth"):
 		healthbar.updateHealth(health)
+
+	# trigger screen shake when taking damage
+	trigger_camera_shake(3.0, 8.0)  
 
 	# visual knockback
 	animated_sprite_2d.modulate = Color(1, 0.7, 0.7)
@@ -460,3 +495,9 @@ func _on_hurtbox_spike_body_entered(body: Node2D) -> void:
 		
 func reload_scene() -> void:
 	get_tree().reload_current_scene()
+
+# --- SCREEN SHAKE ---
+func trigger_camera_shake(strength: float = 10.0, decay: float = 5.0) -> void: #default parameters for fallbacks
+	var camera = get_viewport().get_camera_2d()
+	if camera and camera.has_method("apply_shake"):
+		camera.apply_shake(strength, decay)
