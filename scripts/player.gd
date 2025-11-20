@@ -111,8 +111,8 @@ func _ready() -> void:
 	if animated_sprite_2d.sprite_frames:
 		animated_sprite_2d.sprite_frames.set_animation_loop("light_punch", false)
 		animated_sprite_2d.sprite_frames.set_animation_loop("heavy_punch", false)
-		animated_sprite_2d.sprite_frames.set_animation_loop("shoot", false)
-		animated_sprite_2d.sprite_frames.set_animation_loop("shoot_&_walk", false)
+		#animated_sprite_2d.sprite_frames.set_animation_loop("shoot", false)
+		#animated_sprite_2d.sprite_frames.set_animation_loop("shoot_&_walk", false)
 	animated_sprite_2d.animation_finished.connect(_on_animation_finished)
 
 	# Room/ability stuff
@@ -239,11 +239,13 @@ func _process(_dt: float) -> void:
 		else:
 			start_light_attack_animation()
 	
-	if not is_wall_sliding and not is_shooting and Input.is_action_just_pressed("shoot"):
-		if velocity.x != 0:
-			start_walk_shoot_animation()
-		else:
-			start_shoot_animation()
+	if not is_wall_sliding and Input.is_action_just_pressed("shoot"): #not is_shooting and 
+		shoot()
+		#if not is_shooting:
+			#if velocity.x != 0:
+				#start_walk_shoot_animation()
+			#else:
+				#start_shoot_animation()
 
 	# Animation fallbacks
 	if attacking:
@@ -260,25 +262,39 @@ func _process(_dt: float) -> void:
 			if animated_sprite_2d.animation == "wall_slide":
 				animated_sprite_2d.stop()
 	
-	if is_shooting:
-		if animated_sprite_2d.animation not in ["shoot", "shoot_&_walk"]:
-			if velocity.x != 0:
-				start_walk_shoot_animation()
-			else:
-				start_shoot_animation()
+	#if is_shooting:
+		#if animated_sprite_2d.animation not in ["shoot", "shoot_&_walk"]:
+			#if velocity.x != 0:
+				#start_walk_shoot_animation()
+			#else:
+				#start_shoot_animation()
 	
-	if is_on_floor() and not attacking and not is_wall_sliding and not is_shooting:
+	if is_on_floor() and not attacking and not is_wall_sliding: #and not is_shooting:
 		if not is_dashing:
-			if abs(velocity.x) > 10.0:
-				if animated_sprite_2d.animation != "new_walk":
-					animated_sprite_2d.play("new_walk")
+			if not is_shooting:
+				if abs(velocity.x) > 10.0:
+					if animated_sprite_2d.animation != "new_walk":
+						animated_sprite_2d.play("new_walk")
+				else:
+					if animated_sprite_2d.animation != "new_idle":
+						animated_sprite_2d.play("new_idle")
 			else:
-				if animated_sprite_2d.animation != "new_idle":
-					animated_sprite_2d.play("new_idle")
+				if abs(velocity.x) > 10.0:
+					if animated_sprite_2d.animation != "shoot_&_walk":
+						animated_sprite_2d.play("shoot_&_walk")
+				else:
+					if animated_sprite_2d.animation != "shoot":
+						animated_sprite_2d.play("shoot")
+				#if animated_sprite_2d.animation not in ["shoot", "shoot_&_walk"]:
+					#if velocity.x != 0:
+						#start_walk_shoot_animation()
+					#else:
+						#start_shoot_animation()
 		else:
 			if animated_sprite_2d.animation != "dash":
 				animated_sprite_2d.play("dash")
-	elif not is_on_floor() and not is_wall_sliding and not is_shooting:
+				
+	elif not is_on_floor() and not is_wall_sliding: #and not is_shooting:
 		if not is_dashing:
 			if velocity.y > 0:
 				if animated_sprite_2d.animation != "fall":
@@ -312,32 +328,40 @@ func start_heavy_attack_animation():
 	animated_sprite_2d.play("heavy_punch")
 	animated_sprite_2d.frame = 0
 	
+func shoot():
+	is_shooting = true
+	#animated_sprite_2d.play("shoot")
+	#animated_sprite_2d.frame = 0
+	idle_timer.start()
+	print("shooting a shot!")
+	pass
+	
 func start_shoot_animation():
 	is_shooting = true
-	animated_sprite_2d.play("shoot")
-	animated_sprite_2d.frame = 0
+	#animated_sprite_2d.play("shoot")
+	#animated_sprite_2d.frame = 0
 	idle_timer.start()
 
 func start_walk_shoot_animation():
 	is_shooting = true
-	animated_sprite_2d.play("shoot_&_walk")
-	animated_sprite_2d.frame = 0
+	#animated_sprite_2d.play("shoot_&_walk")
+	#animated_sprite_2d.frame = 0
 	idle_timer.start()
 	
 func _on_idle_timer_timeout() -> void:
 	is_shooting = false
 	
-	if is_on_floor() and not attacking and not is_wall_sliding and not is_dashing:
-		if animated_sprite_2d.animation not in ["new_idle", "new_walk"]:
-			animated_sprite_2d.play("new_idle")
+	#if is_on_floor() and not attacking and not is_wall_sliding and not is_dashing:
+		#if animated_sprite_2d.animation not in ["new_idle", "new_walk"]:
+			#animated_sprite_2d.play("new_idle")
 
 func _on_animation_finished() -> void:
 	match animated_sprite_2d.animation:
 		"light_punch", "heavy_punch":
 			attacking = false
 			_hitbox_off_all()
-	if not is_shooting and not attacking:
-		animated_sprite_2d.play("new_idle")
+	#if not is_shooting and not attacking:
+		#animated_sprite_2d.play("new_idle")
 
 # --- DASH ---
 func perform_dash() -> void:
