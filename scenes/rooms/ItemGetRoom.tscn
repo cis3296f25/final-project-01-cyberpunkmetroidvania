@@ -8,7 +8,6 @@
 [ext_resource type="TileSet" uid="uid://i4nma5hm3kyn" path="res://assets/tilesets/new mid_set.tres" id="4_mmu6j"]
 [ext_resource type="PackedScene" uid="uid://b3hjlgmu1lcvb" path="res://scenes/player.tscn" id="5_h46n6"]
 [ext_resource type="PackedScene" uid="uid://c4pp4yend8i2s" path="res://scenes/player_cam.tscn" id="6_ljfxb"]
-[ext_resource type="PackedScene" uid="uid://cc03ott63xw1y" path="res://scenes/SoundController.tscn" id="8_cd2fw"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vwe15"]
 size = Vector2(63, 64)
@@ -78,5 +77,3 @@ position = Vector2(48, 37)
 limit_left = 0
 limit_right = 320
 limit_bottom = 96
-
-[node name="SoundController" parent="." instance=ExtResource("8_cd2fw")]

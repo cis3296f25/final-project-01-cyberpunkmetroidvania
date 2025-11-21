@@ -1,19 +1,20 @@
 [gd_scene load_steps=11 format=4 uid="uid://bv8jyv6bay2na"]
 
 [ext_resource type="TileSet" uid="uid://djepbnc3vr1ce" path="res://assets/tilesets/new back_set.tres" id="1_errkn"]
+[ext_resource type="Script" uid="uid://d3548dbgrelj8" path="res://scripts/boss_room.gd" id="1_errkn"]
 [ext_resource type="TileSet" uid="uid://cde4wxs14s2l0" path="res://assets/tilesets/back_fore_32_set.tres" id="1_i0oxy"]
 [ext_resource type="TileSet" uid="uid://i4nma5hm3kyn" path="res://assets/tilesets/new mid_set.tres" id="3_7ml8d"]
 [ext_resource type="TileSet" uid="uid://n8yvtghn021u" path="res://assets/tilesets/back_fore_16_set.tres" id="3_x07bo"]
 [ext_resource type="PackedScene" uid="uid://b3hjlgmu1lcvb" path="res://scenes/player.tscn" id="4_b520o"]
 [ext_resource type="PackedScene" uid="uid://c4pp4yend8i2s" path="res://scenes/player_cam.tscn" id="5_k3fkp"]
 [ext_resource type="PackedScene" uid="uid://bmar3kpdyosnu" path="res://scenes/level stuff/door.tscn" id="6_errkn"]
-[ext_resource type="PackedScene" uid="uid://cc03ott63xw1y" path="res://scenes/SoundController.tscn" id="7_b520o"]
 [ext_resource type="PackedScene" uid="uid://dh3x6lscraayp" path="res://scenes/boss.tscn" id="8_k3fkp"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_7ml8d"]
 size = Vector2(62, 63)
 
 [node name="BossRoom" type="Node2D"]
+script = ExtResource("1_errkn")
 
 [node name="TileMap" type="Node" parent="."]
 
@@ -61,8 +62,6 @@ playerPosition = Vector2(525, 285)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Door"]
 position = Vector2(1, -1.5)
 shape = SubResource("RectangleShape2D_7ml8d")
-
-[node name="SoundController" parent="." instance=ExtResource("7_b520o")]
 
 [node name="Boss" parent="." instance=ExtResource("8_k3fkp")]
 position = Vector2(407, 288)

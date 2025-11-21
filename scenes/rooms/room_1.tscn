@@ -142,8 +142,6 @@ playerPosition = Vector2(32, 48)
 position = Vector2(-0.5, -1)
 shape = SubResource("RectangleShape2D_ow1e4")
 
-[node name="SoundController" parent="." instance=ExtResource("10_wtcj1")]
-
 [node name="Area2D" type="Area2D" parent="."]
 position = Vector2(324, -56)
 script = SubResource("GDScript_wrk0s")
