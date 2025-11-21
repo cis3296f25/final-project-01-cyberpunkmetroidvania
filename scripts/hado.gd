@@ -35,7 +35,7 @@ func _on_body_entered(body: Node) -> void:
 	direction = Vector2.ZERO
 	
 	if body.is_in_group("enemy") and body.has_method("take_damage"):
-		body.take_damage(1.0, direction, direction)
+		body.take_damage(3.0, direction, direction)
 	
 	
 	animation.play("hado end")
