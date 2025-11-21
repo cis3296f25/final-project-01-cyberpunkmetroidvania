@@ -1,12 +1,12 @@
 [gd_scene load_steps=11 format=4 uid="uid://bl4xf88rcefnd"]
 
 [ext_resource type="TileSet" uid="uid://cde4wxs14s2l0" path="res://assets/tilesets/back_fore_32_set.tres" id="1_0hwry"]
+[ext_resource type="Script" uid="uid://cchnxmqf5eomc" path="res://scripts/room_2.gd" id="1_nu3hr"]
 [ext_resource type="PackedScene" uid="uid://cp26yrfiml1p2" path="res://scenes/level stuff/platform.tscn" id="2_ktm03"]
 [ext_resource type="TileSet" uid="uid://c5hms5rcydra0" path="res://assets/tilesets/mid_set.tres" id="2_nu3hr"]
 [ext_resource type="PackedScene" uid="uid://bmar3kpdyosnu" path="res://scenes/level stuff/door.tscn" id="3_lsxps"]
 [ext_resource type="PackedScene" uid="uid://b3hjlgmu1lcvb" path="res://scenes/player.tscn" id="4_ktm03"]
 [ext_resource type="PackedScene" uid="uid://c4pp4yend8i2s" path="res://scenes/player_cam.tscn" id="4_lsxps"]
-[ext_resource type="PackedScene" uid="uid://cc03ott63xw1y" path="res://scenes/SoundController.tscn" id="7_nu3hr"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ktm03"]
 size = Vector2(64, 64)
@@ -18,6 +18,7 @@ size = Vector2(64, 64)
 size = Vector2(65, 66)
 
 [node name="Room 2" type="Node2D"]
+script = ExtResource("1_nu3hr")
 
 [node name="tilemap" type="Node" parent="."]
 
@@ -80,8 +81,6 @@ playerPosition = Vector2(-230, -10)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Doorplat"]
 position = Vector2(367, -184)
 shape = SubResource("RectangleShape2D_lsxps")
-
-[node name="SoundController" parent="." instance=ExtResource("7_nu3hr")]
 
 [node name="DoorBoss" parent="." instance=ExtResource("3_lsxps")]
 position = Vector2(574, 258)

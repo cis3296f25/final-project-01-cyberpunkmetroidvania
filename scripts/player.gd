@@ -234,8 +234,8 @@ func _physics_process(delta: float) -> void:
 			accel = (AIR_TURN_ACCEL if vel_sign != 0 and dir_sign != 0 and vel_sign != dir_sign else AIR_ACCEL)
 
 	if is_dashing:
-		target_speed *= 4
-		accel *= 8
+		target_speed *= 2
+		accel *= 3
 
 	velocity.x = move_toward(velocity.x, target_speed, accel * delta)
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=4 uid="uid://csmuy6bvfq4pj"]
+[gd_scene load_steps=9 format=4 uid="uid://csmuy6bvfq4pj"]
 
 [ext_resource type="Script" uid="uid://boteeh8pae6yd" path="res://scenes/rooms/item_get_room.gd" id="1_ljfxb"]
 [ext_resource type="TileSet" uid="uid://cde4wxs14s2l0" path="res://assets/tilesets/back_fore_32_set.tres" id="1_mux0k"]
@@ -7,7 +7,6 @@
 [ext_resource type="PackedScene" uid="uid://bmar3kpdyosnu" path="res://scenes/level stuff/door.tscn" id="4_bdo30"]
 [ext_resource type="PackedScene" uid="uid://b3hjlgmu1lcvb" path="res://scenes/player.tscn" id="5_h46n6"]
 [ext_resource type="PackedScene" uid="uid://c4pp4yend8i2s" path="res://scenes/player_cam.tscn" id="6_ljfxb"]
-[ext_resource type="PackedScene" uid="uid://cc03ott63xw1y" path="res://scenes/SoundController.tscn" id="8_cd2fw"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vwe15"]
 size = Vector2(63, 64)
@@ -77,5 +76,3 @@ position = Vector2(48, 37)
 limit_left = 0
 limit_right = 320
 limit_bottom = 96
-
-[node name="SoundController" parent="." instance=ExtResource("8_cd2fw")]
