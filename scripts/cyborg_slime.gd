@@ -68,6 +68,7 @@ func take_damage(amount: float, _hit_dir: Vector2, _source_pos: Vector2) -> void
 		return
 	invuln = true
 	invuln_timer.start(invuln_time)
+	SoundController.play_hit_marker()
 
 	hp -= int(ceil(amount))
 	if sprite:
@@ -76,6 +77,7 @@ func take_damage(amount: float, _hit_dir: Vector2, _source_pos: Vector2) -> void
 		_die()
 	
 func _die() -> void:
+	SoundController.play_enemy_death()
 	# stop damage ticks and i-frames
 	if is_instance_valid(dmg_tick):
 		dmg_tick.stop()
