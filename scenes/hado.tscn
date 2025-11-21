@@ -114,7 +114,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"hado",
-"speed": 5.0
+"speed": 12.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -143,7 +143,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"hado end",
-"speed": 5.0
+"speed": 12.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -160,7 +160,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"hado start",
-"speed": 5.0
+"speed": 12.0
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_6qtt1"]
@@ -173,6 +173,7 @@ script = ExtResource("1_rmeio")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_mst1a")
 animation = &"hado"
+frame_progress = 0.090199895
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_6qtt1")
