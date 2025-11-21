@@ -31,11 +31,16 @@ const PLAYER_MASS := 1.0
 
 # --- ATTACK ---
 var attacking := false
+var is_hado := false
 var HEAVY_DAMAGE = 1.75
 var LIGHT_DAMAGE = 1.00
 var hit_this_swing: Dictionary = {}
 const HITBOX_OFFSET := 8.0
+const MUZZLE_OFFSET := 14.0
 var is_shooting := false
+const BulletScene: PackedScene = preload("res://scenes/bullet.tscn")
+const HadoScene: PackedScene = preload("res://scenes/hado.tscn")
+
 
 # --- INTERNAL STATE ---
 var coyote_timer: float = 0.0
@@ -79,6 +84,7 @@ var invuln := false
 @onready var lp_hitbox_shape: CollisionShape2D = $LPHitbox/LightPunchHitbox
 @onready var hp_hitbox: Area2D = $HPHitbox
 @onready var hp_hitbox_shape: CollisionShape2D = $HPHitbox/HeavyPunchHitbox
+@onready var muzzle: Marker2D = $AnimatedSprite2D/Muzzle
 
 @onready var dashCooldown: Timer = $dashCooldown
 @onready var dashDuration: Timer = $dashDuration
@@ -127,6 +133,7 @@ func _ready() -> void:
 	if animated_sprite_2d.sprite_frames:
 		animated_sprite_2d.sprite_frames.set_animation_loop("light_punch", false)
 		animated_sprite_2d.sprite_frames.set_animation_loop("heavy_punch", false)
+		animated_sprite_2d.sprite_frames.set_animation_loop("hadoken", false)
 		#animated_sprite_2d.sprite_frames.set_animation_loop("shoot", false)
 		#animated_sprite_2d.sprite_frames.set_animation_loop("shoot_&_walk", false)
 	animated_sprite_2d.animation_finished.connect(_on_animation_finished)
@@ -271,8 +278,18 @@ func _process(_dt: float) -> void:
 		else:
 			start_light_attack_animation()
 	
-	if not is_wall_sliding and Input.is_action_just_pressed("shoot"): #not is_shooting and 
-		shoot()
+	if not is_wall_sliding and Input.is_action_just_pressed("shoot"):
+		if Input.is_key_pressed(KEY_SHIFT):
+			hado()
+		else: #not is_shooting and 
+			shoot()
+			
+	if is_hado:
+		velocity.x = 0
+		if animated_sprite_2d.animation != "hadoken":
+			animated_sprite_2d.play("hadoken")
+			animated_sprite_2d.frame = 0  # start from beginning once
+		return  # IMPORTANT: don't let other animation logic run this frame
 		#if not is_shooting:
 			#if velocity.x != 0:
 				#start_walk_shoot_animation()
@@ -311,12 +328,13 @@ func _process(_dt: float) -> void:
 					if animated_sprite_2d.animation != "new_idle":
 						animated_sprite_2d.play("new_idle")
 			else:
-				if abs(velocity.x) > 10.0:
-					if animated_sprite_2d.animation != "shoot_&_walk":
-						animated_sprite_2d.play("shoot_&_walk")
-				else:
-					if animated_sprite_2d.animation != "shoot":
-						animated_sprite_2d.play("shoot")
+				if is_shooting:
+					if abs(velocity.x) > 10.0:
+						if animated_sprite_2d.animation != "shoot_&_walk":
+							animated_sprite_2d.play("shoot_&_walk")
+					else:
+						if animated_sprite_2d.animation != "shoot":
+							animated_sprite_2d.play("shoot")
 				#if animated_sprite_2d.animation not in ["shoot", "shoot_&_walk"]:
 					#if velocity.x != 0:
 						#start_walk_shoot_animation()
@@ -362,11 +380,40 @@ func start_heavy_attack_animation():
 	
 func shoot():
 	is_shooting = true
-	#animated_sprite_2d.play("shoot")
-	#animated_sprite_2d.frame = 0
 	idle_timer.start()
 	print("shooting a shot!")
+	
+	#spawn bullet
+	var bullet = BulletScene.instantiate()
+	bullet.global_position = muzzle.global_position
+	if facing == Vector2.RIGHT:
+		bullet.direction = Vector2.RIGHT
+	else:
+		bullet.direction = Vector2.LEFT
+	get_tree().current_scene.add_child(bullet)
 	pass
+	
+func hado():
+	if is_hado:
+		return
+		
+	is_hado = true
+	is_shooting = false
+	velocity.x = 0
+	
+	#is_shooting = true #here for placeholder animation
+	print("hadoken!")
+	#idle_timer.start() #part of placeholder
+	
+
+func _spawn_hado():
+	var hadoken = HadoScene.instantiate()
+	hadoken.global_position = muzzle.global_position
+	if facing == Vector2.RIGHT:
+		hadoken.direction = Vector2.RIGHT
+	else:
+		hadoken.direction = Vector2.LEFT
+	get_tree().current_scene.add_child(hadoken)
 	
 func start_shoot_animation():
 	is_shooting = true
@@ -392,6 +439,10 @@ func _on_animation_finished() -> void:
 		"light_punch", "heavy_punch":
 			attacking = false
 			_hitbox_off_all()
+		"hadoken":
+			if is_hado:
+				_spawn_hado()
+				is_hado = false
 	#if not is_shooting and not attacking:
 		#animated_sprite_2d.play("new_idle")
 
@@ -447,9 +498,9 @@ func _hitbox_off_all() -> void:
 	hp_hitbox.monitorable = false
 
 func _position_hitboxes_ahead() -> void:
-	var position := Vector2(HITBOX_OFFSET * facing.x, 0)
-	hp_hitbox.position = position
-	lp_hitbox.position = position
+	hp_hitbox.position = Vector2(HITBOX_OFFSET * facing.x, 0)
+	lp_hitbox.position = Vector2(HITBOX_OFFSET * facing.x, 0)
+	muzzle.position = Vector2(MUZZLE_OFFSET * facing.x, 0)
 
 # -- Player hitbox overlaps enemy --
 func _on_light_area_entered(area: Area2D) -> void:
