@@ -56,7 +56,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"bullet end",
-"speed": 10.0
+"speed": 15.0
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_6umxm"]
@@ -68,8 +68,8 @@ script = ExtResource("1_l5glv")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_iqq7w")
-animation = &"bullet"
-frame_progress = 0.95071054
+animation = &"bullet end"
+frame_progress = 0.3487273
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_6umxm")
