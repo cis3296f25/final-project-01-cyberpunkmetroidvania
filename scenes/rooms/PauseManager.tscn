@@ -1,0 +1,50 @@
+[gd_scene load_steps=2 format=3 uid="uid://bpk3xqx5gfh7s"]
+
+[ext_resource type="Script" uid="uid://be206kdjgftic" path="res://scenes/rooms/pause_manager.gd" id="1_jdcuq"]
+
+[node name="PauseLayer" type="CanvasLayer"]
+process_mode = 3
+visible = false
+script = ExtResource("1_jdcuq")
+
+[node name="DimBackground" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.22352941, 0.22352941, 0.22352941, 0.9411765)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="CenterContainer"]
+process_mode = 2
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/Panel"]
+process_mode = 2
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="ResumeButton" type="Button" parent="CenterContainer/Panel/VBoxContainer"]
+process_mode = 2
+custom_minimum_size = Vector2(300, 70)
+layout_mode = 2
+size_flags_vertical = 3
+text = "Resume"
+
+[node name="QuitButton" type="Button" parent="CenterContainer/Panel/VBoxContainer"]
+process_mode = 2
+custom_minimum_size = Vector2(300, 70)
+layout_mode = 2
+size_flags_vertical = 3
+text = "Quit"

@@ -71,7 +71,6 @@ var invuln := false
 
 @onready var dashCooldown: Timer = $dashCooldown
 @onready var dashDuration: Timer = $dashDuration
-@onready var pause_layer: CanvasLayer = $PauseLayer
 
 # --- READY ---
 func _ready() -> void:
