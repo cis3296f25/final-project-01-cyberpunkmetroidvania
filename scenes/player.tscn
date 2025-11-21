@@ -385,6 +385,10 @@ animation = &"shoot_&_walk"
 autoplay = "new_idle"
 frame_progress = 0.2759435
 
+[node name="Muzzle" type="Marker2D" parent="AnimatedSprite2D"]
+z_index = 4
+position = Vector2(14, -3)
+
 [node name="CollisionBox" type="CollisionShape2D" parent="."]
 z_index = 5
 position = Vector2(1, 1.5)

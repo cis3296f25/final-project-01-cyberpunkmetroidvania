@@ -35,7 +35,10 @@ var HEAVY_DAMAGE = 1.75
 var LIGHT_DAMAGE = 1.00
 var hit_this_swing: Dictionary = {}
 const HITBOX_OFFSET := 8.0
+const MUZZLE_OFFSET := 14.0
 var is_shooting := false
+const BulletScene: PackedScene = preload("res://scenes/bullet.tscn")
+
 
 # --- INTERNAL STATE ---
 var coyote_timer: float = 0.0
@@ -79,6 +82,7 @@ var invuln := false
 @onready var lp_hitbox_shape: CollisionShape2D = $LPHitbox/LightPunchHitbox
 @onready var hp_hitbox: Area2D = $HPHitbox
 @onready var hp_hitbox_shape: CollisionShape2D = $HPHitbox/HeavyPunchHitbox
+@onready var muzzle: Marker2D = $AnimatedSprite2D/Muzzle
 
 @onready var dashCooldown: Timer = $dashCooldown
 @onready var dashDuration: Timer = $dashDuration
@@ -362,10 +366,17 @@ func start_heavy_attack_animation():
 	
 func shoot():
 	is_shooting = true
-	#animated_sprite_2d.play("shoot")
-	#animated_sprite_2d.frame = 0
 	idle_timer.start()
 	print("shooting a shot!")
+	
+	#spawn bullet
+	var bullet = BulletScene.instantiate()
+	bullet.global_position = muzzle.global_position
+	if facing == Vector2.RIGHT:
+		bullet.direction = Vector2.RIGHT
+	else:
+		bullet.direction = Vector2.LEFT
+	get_tree().current_scene.add_child(bullet)
 	pass
 	
 func start_shoot_animation():
@@ -447,9 +458,9 @@ func _hitbox_off_all() -> void:
 	hp_hitbox.monitorable = false
 
 func _position_hitboxes_ahead() -> void:
-	var position := Vector2(HITBOX_OFFSET * facing.x, 0)
-	hp_hitbox.position = position
-	lp_hitbox.position = position
+	hp_hitbox.position = Vector2(HITBOX_OFFSET * facing.x, 0)
+	lp_hitbox.position = Vector2(HITBOX_OFFSET * facing.x, 0)
+	muzzle.position = Vector2(MUZZLE_OFFSET * facing.x, 0)
 
 # -- Player hitbox overlaps enemy --
 func _on_light_area_entered(area: Area2D) -> void:
