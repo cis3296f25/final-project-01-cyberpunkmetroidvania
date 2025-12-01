@@ -86,13 +86,15 @@ func _die() -> void:
 
 	# disable hitboxes
 	if is_instance_valid(hitbox):
-		hitbox.monitoring = false
-		hitbox.monitorable = false
+		hitbox.set_deferred("monitoring", false)
+		hitbox.set_deferred("monitorable", false)
+
 	if is_instance_valid(hurtbox):
-		hurtbox.monitoring = false
-		hurtbox.monitorable = false
+		hurtbox.set_deferred("monitoring", false)
+		hurtbox.set_deferred("monitorable", false)
+
 	if is_instance_valid(body_shape):
-		body_shape.disabled = true
+		body_shape.set_deferred("disabled", true)
 	queue_free()
 
 func _on_invuln_timeout() -> void:
