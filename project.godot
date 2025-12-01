@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 RoomChangeGlobal="*res://scripts/RoomChangeGlobal.gd"
 SoundController="*res://scenes/SoundController.tscn"
+GameState="*res://scripts/GameState.gd"
 
 [display]
 

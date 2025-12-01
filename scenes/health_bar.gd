@@ -36,9 +36,9 @@ func _process(delta: float) -> void:
 			_dropping = false
 
 
-func initHealth(_health: int) -> void:
-	max_value = max(1, _health)
-	health = _health
+func initHealth(_current_health: int, _max_health) -> void:
+	max_value = max(1, _max_health)
+	health = _current_health
 	value = health
 	if is_instance_valid(damageBar):
 		damageBar.max_value = max_value

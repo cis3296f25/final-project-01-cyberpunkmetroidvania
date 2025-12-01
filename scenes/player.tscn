@@ -462,7 +462,7 @@ autoplay = "new_idle"
 
 [node name="Muzzle" type="Marker2D" parent="AnimatedSprite2D"]
 z_index = 4
-position = Vector2(16, -7)
+position = Vector2(15, -3)
 
 [node name="CollisionBox" type="CollisionShape2D" parent="."]
 z_index = 5
