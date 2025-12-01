@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=4 uid="uid://ns3pwpuaqeh2"]
+[gd_scene load_steps=18 format=4 uid="uid://ns3pwpuaqeh2"]
 
 [ext_resource type="Script" uid="uid://c08aqxxpbp5xj" path="res://scripts/room_1.gd" id="1_irjyx"]
 [ext_resource type="PackedScene" uid="uid://b3hjlgmu1lcvb" path="res://scenes/player.tscn" id="2_xhekj"]
@@ -10,7 +10,6 @@
 [ext_resource type="TileSet" uid="uid://n8yvtghn021u" path="res://assets/tilesets/back_fore_16_set.tres" id="5_wtcj1"]
 [ext_resource type="PackedScene" uid="uid://455chnn75dsd" path="res://scenes/cyborg_slime.tscn" id="6_0akh5"]
 [ext_resource type="TileSet" uid="uid://i4nma5hm3kyn" path="res://assets/tilesets/new mid_set.tres" id="7_whcv4"]
-[ext_resource type="PackedScene" uid="uid://cc03ott63xw1y" path="res://scenes/SoundController.tscn" id="10_wtcj1"]
 [ext_resource type="Texture2D" uid="uid://bnw1faqo2vr1b" path="res://Untitled.png" id="11_38fm3"]
 [ext_resource type="AudioStream" uid="uid://f56k4xf175uk" path="res://assets/sounds/Powerup_collect.wav" id="12_wrk0s"]
 

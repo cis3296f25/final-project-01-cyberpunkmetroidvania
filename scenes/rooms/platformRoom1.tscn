@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=4 uid="uid://d3s2sjjwsobqv"]
+[gd_scene load_steps=31 format=4 uid="uid://d3s2sjjwsobqv"]
 
 [ext_resource type="TileSet" uid="uid://cde4wxs14s2l0" path="res://assets/tilesets/back_fore_32_set.tres" id="1_kujaw"]
 [ext_resource type="TileSet" uid="uid://djepbnc3vr1ce" path="res://assets/tilesets/new back_set.tres" id="1_ub2ae"]
@@ -10,7 +10,6 @@
 [ext_resource type="PackedScene" uid="uid://bmar3kpdyosnu" path="res://scenes/level stuff/door.tscn" id="7_cdooi"]
 [ext_resource type="PackedScene" uid="uid://cs04855ow3t40" path="res://scenes/coin.tscn" id="9_cdooi"]
 [ext_resource type="PackedScene" uid="uid://455chnn75dsd" path="res://scenes/cyborg_slime.tscn" id="9_rxrds"]
-[ext_resource type="PackedScene" uid="uid://cc03ott63xw1y" path="res://scenes/SoundController.tscn" id="10_rxrds"]
 
 [sub_resource type="Animation" id="Animation_y0b2v"]
 length = 0.001
@@ -415,5 +414,3 @@ autoplay = "elevator1"
 
 [node name="Coin" parent="." instance=ExtResource("9_cdooi")]
 position = Vector2(175, -223)
-
-[node name="SoundController" parent="." instance=ExtResource("10_rxrds")]

@@ -457,12 +457,13 @@ script = ExtResource("1_g2els")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_tuyoq")
-animation = &"shoot"
+animation = &"hadoken"
 autoplay = "new_idle"
+frame_progress = 0.1915573
 
 [node name="Muzzle" type="Marker2D" parent="AnimatedSprite2D"]
 z_index = 4
-position = Vector2(15, -3)
+position = Vector2(14, -3)
 
 [node name="CollisionBox" type="CollisionShape2D" parent="."]
 z_index = 5

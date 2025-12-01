@@ -1,12 +1,13 @@
 extends Node2D
 
-
-# Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass # Replace with function body.
+	SoundController.stop_boss_music()
+	SoundController.play_music()
+
+	# 🎮 Give controller focus to the Start button
+	$Control/CenterContainer/VBoxContainer/Start.grab_focus()
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	pass
 
@@ -16,8 +17,8 @@ func _on_start_pressed() -> void:
 
 
 func _on_options_pressed() -> void:
-	pass # Replace with function body.
-	#will eventually have an options menu?
+	# options coming later
+	pass
 
 
 func _on_quit_pressed() -> void:
