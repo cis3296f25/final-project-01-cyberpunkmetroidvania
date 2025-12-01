@@ -272,14 +272,21 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 func _process(_dt: float) -> void:
-	if not is_wall_sliding and is_on_floor() and not attacking and Input.is_action_just_pressed("attack"):
-		if Input.is_key_pressed(KEY_SHIFT):
+	var attack_pressed := Input.is_action_just_pressed("attack")
+	var heavy_pressed := (
+		Input.is_action_just_pressed("attack_rb")    # controller heavy
+		or (attack_pressed and Input.is_key_pressed(KEY_SHIFT)) # keyboard heavy
+	)
+
+	if not attacking and is_on_floor() and not is_wall_sliding:
+		if heavy_pressed:
 			start_heavy_attack_animation()
-		else:
+		elif attack_pressed:
 			start_light_attack_animation()
+
 	
-	if not is_wall_sliding and Input.is_action_just_pressed("shoot"):
-		if Input.is_key_pressed(KEY_SHIFT):
+	if not is_wall_sliding and Input.is_action_just_pressed("shoot") or Input.is_action_just_pressed("shoot_lb"):
+		if Input.is_key_pressed(KEY_SHIFT) or Input.is_action_pressed("shoot_lb"):
 			hado()
 		else: #not is_shooting and 
 			shoot()
