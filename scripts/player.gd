@@ -55,9 +55,6 @@ var is_wall_sliding := false
 var is_dashing := false
 var can_dash := true
 
-var max_health = 10
-var health = max_health
-
 # --- LANDING SHAKE TRACKING ---
 var landing_velocity: float = 0.0
 const LANDING_VELOCITY_THRESHOLD: float = 600.0  # minimum velocity to trigger shake
@@ -92,8 +89,8 @@ var invuln := false
 # --- UPGRADE ---
 func apply_permanent_upgrade(health_increase: int, damage_increase: int) -> void:
 	
-	max_health += health_increase
-	health = max_health
+	GameState.max_health += health_increase
+	GameState.current_health = GameState.max_health
 	LIGHT_DAMAGE+=damage_increase
 	HEAVY_DAMAGE+=damage_increase
 
@@ -127,15 +124,13 @@ func _ready() -> void:
 	if not invuln_timer.timeout.is_connected(cb):
 		invuln_timer.timeout.connect(cb)
 
-	healthbar.initHealth(health)
+	healthbar.initHealth(GameState.current_health, GameState.max_health)
 
 	# Attack animation loop control
 	if animated_sprite_2d.sprite_frames:
 		animated_sprite_2d.sprite_frames.set_animation_loop("light_punch", false)
 		animated_sprite_2d.sprite_frames.set_animation_loop("heavy_punch", false)
 		animated_sprite_2d.sprite_frames.set_animation_loop("hadoken", false)
-		#animated_sprite_2d.sprite_frames.set_animation_loop("shoot", false)
-		#animated_sprite_2d.sprite_frames.set_animation_loop("shoot_&_walk", false)
 	animated_sprite_2d.animation_finished.connect(_on_animation_finished)
 
 	# Room/ability stuff
@@ -492,10 +487,7 @@ func _on_hurt_box_body_entered(body: Node2D) -> void:
 		var src_pos: Vector2 = body.global_position
 		take_damage(1.0, dir, src_pos)
 	print("damage taken")
-	health -= 1
 
-	if health <= 0:
-		call_deferred("reload_scene")
 
 # -- Hitbox turnoff --
 func _hitbox_off_all() -> void:
@@ -539,10 +531,11 @@ func _take_damage(damage: float, hit_dir: Vector2, source_pos: Vector2) -> void:
 	invuln = true
 	invuln_timer.start(invuln_time)
 	SoundController.play_hurt()
+	GameState.current_health -= damage
 
-	health -= int(ceil(damage))
+
 	if is_instance_valid(healthbar) and healthbar.has_method("updateHealth"):
-		healthbar.updateHealth(health)
+		healthbar.updateHealth(GameState.current_health)
 
 	# trigger screen shake when taking damage
 	trigger_camera_shake(3.0, 8.0)  
@@ -565,7 +558,13 @@ func _take_damage(damage: float, hit_dir: Vector2, source_pos: Vector2) -> void:
 	var H := 600.0
 	var V := -150.0
 	velocity = Vector2(kb.x * H, V)
-
+	
+	if GameState.current_health <= 0:
+		SoundController.play_death()
+		print("Player died")
+		await get_tree().create_timer(0.15).timeout
+		call_deferred("reload_scene") 
+		GameState.current_health = GameState.max_health
 
 # --- MISC ---
 func _on_hurtbox_spike_body_entered(body: Node2D) -> void:

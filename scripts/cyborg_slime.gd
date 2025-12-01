@@ -16,7 +16,6 @@ extends CharacterBody2D
 @onready var invuln_timer: Timer = $InvulnTimer
 @onready var dmg_tick: Timer = $DamageTick
 
-
 # -- State --
 var hp := 0
 var invuln := false
@@ -51,7 +50,6 @@ func _ready() -> void:
 	hurtbox.monitoring  = true
 	hurtbox.monitorable = true
 
-	# Connect Hitbox signals once
 	var cb_enter := Callable(self, "_on_hitbox_area_entered")
 	if not hitbox.area_entered.is_connected(cb_enter):
 		hitbox.area_entered.connect(cb_enter)
@@ -84,15 +82,18 @@ func _die() -> void:
 	if is_instance_valid(invuln_timer):
 		invuln_timer.stop()
 
-	# disable hitboxes
+	# disable hitboxes (deferred so it’s safe in signals)
 	if is_instance_valid(hitbox):
-		hitbox.monitoring = false
-		hitbox.monitorable = false
+		hitbox.set_deferred("monitoring", false)
+		hitbox.set_deferred("monitorable", false)
+
 	if is_instance_valid(hurtbox):
-		hurtbox.monitoring = false
-		hurtbox.monitorable = false
+		hurtbox.set_deferred("monitoring", false)
+		hurtbox.set_deferred("monitorable", false)
+
 	if is_instance_valid(body_shape):
-		body_shape.disabled = true
+		body_shape.set_deferred("disabled", true)
+
 	queue_free()
 
 func _on_invuln_timeout() -> void:
@@ -100,10 +101,29 @@ func _on_invuln_timeout() -> void:
 	if sprite:
 		sprite.modulate = Color(1, 1, 1)
 
+func _damage_area(area: Area2D) -> void:
+	if not is_instance_valid(area):
+		return
+
+	var player: Node = area.get_parent()
+	if player and player.has_method("take_damage"):
+		var dir: Vector2 = (player.global_position - global_position).normalized()
+		if dir == Vector2.ZERO:
+			dir = Vector2.RIGHT
+		
+		var src_pos: Vector2 = global_position
+		if hitbox != null:
+			src_pos = hitbox.global_position
+		
+		player.take_damage(contact_damage, dir, src_pos)
+
 # -- Deal contact damage to player --
 func _on_hitbox_area_entered(area: Area2D) -> void:
 	_overlapping_player_hurtboxes[area] = true
 	print("ENEMY hitbox entered by:", area.name, " parent:", area.get_parent().name)
+	
+	_damage_area(area)
+	
 	if dmg_tick.is_stopped():
 		dmg_tick.start()
 
@@ -114,17 +134,6 @@ func _on_hitbox_area_exited(area: Area2D) -> void:
 		dmg_tick.stop()
 
 func _on_damage_tick() -> void:
-	# print("DamageTick: overlapping =", _overlapping_player_hurtboxes.size()) for debugging
+	# periodic damage while overlapping
 	for area in _overlapping_player_hurtboxes.keys():
-		if not is_instance_valid(area):
-			continue
-		var player: Node = area.get_parent()
-		if player and player.has_method("take_damage"):
-			var dir: Vector2 = (player.global_position - global_position).normalized()
-			if dir == Vector2.ZERO:
-				dir = Vector2.RIGHT
-			var src_pos: Vector2 = global_position
-			if hitbox != null:
-				src_pos = hitbox.global_position
-			#print("Enemy deals", contact_damage, "to", player.name)
-			Callable(player, "take_damage").call(contact_damage, dir, src_pos)
+		_damage_area(area)
