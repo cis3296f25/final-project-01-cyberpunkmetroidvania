@@ -457,7 +457,6 @@ script = ExtResource("1_g2els")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_tuyoq")
-animation = &"dash"
 animation = &"hadoken"
 autoplay = "new_idle"
 frame_progress = 0.1915573
