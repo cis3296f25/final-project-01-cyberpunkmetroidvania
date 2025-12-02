@@ -40,7 +40,7 @@ const MUZZLE_OFFSET := 14.0
 var is_shooting := false
 const BulletScene: PackedScene = preload("res://scenes/bullet.tscn")
 const HadoScene: PackedScene = preload("res://scenes/hado.tscn")
-
+var hado_active := false
 
 # --- INTERNAL STATE ---
 var coyote_timer: float = 0.0
@@ -272,7 +272,9 @@ func _process(_dt: float) -> void:
 		Input.is_action_just_pressed("attack_rb")    # controller heavy
 		or (attack_pressed and Input.is_key_pressed(KEY_SHIFT)) # keyboard heavy
 	)
-
+	
+	_on_hado_spawn_frame()
+	
 	if not attacking and is_on_floor() and not is_wall_sliding:
 		if heavy_pressed:
 			start_heavy_attack_animation()
@@ -417,6 +419,11 @@ func _spawn_hado():
 		hadoken.direction = Vector2.LEFT
 	get_tree().current_scene.add_child(hadoken)
 	
+func _on_hado_spawn_frame() -> void:
+	if animated_sprite_2d.animation == "hadoken" and animated_sprite_2d.frame == 6 and hado_active == false:
+		_spawn_hado()
+		hado_active = true
+	
 func start_shoot_animation():
 	is_shooting = true
 	#animated_sprite_2d.play("shoot")
@@ -443,7 +450,7 @@ func _on_animation_finished() -> void:
 			_hitbox_off_all()
 		"hadoken":
 			if is_hado:
-				_spawn_hado()
+				hado_active = false
 				is_hado = false
 	#if not is_shooting and not attacking:
 		#animated_sprite_2d.play("new_idle")
