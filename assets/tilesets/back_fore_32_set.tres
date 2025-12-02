@@ -1,0 +1,57 @@
+[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://cde4wxs14s2l0"]
+
+[ext_resource type="Texture2D" uid="uid://dqrjs4imkj3r7" path="res://assets/sprites/tile sprites/back_fore_ground.png" id="1_l2mmb"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_2cmeo"]
+texture = ExtResource("1_l2mmb")
+texture_region_size = Vector2i(32, 32)
+2:4/0 = 0
+2:5/0 = 0
+2:6/0 = 0
+2:7/0 = 0
+3:7/0 = 0
+3:6/0 = 0
+3:5/0 = 0
+3:4/0 = 0
+1:4/0 = 0
+0:4/0 = 0
+0:5/0 = 0
+1:5/0 = 0
+1:6/0 = 0
+0:6/0 = 0
+0:7/0 = 0
+1:7/0 = 0
+5:6/next_alternative_id = 3
+5:6/0 = 0
+5:6/1 = 1
+5:6/1/flip_h = true
+5:7/next_alternative_id = 2
+5:7/0 = 0
+5:7/1 = 1
+5:7/1/flip_h = true
+6:6/next_alternative_id = 2
+6:6/0 = 0
+6:6/1 = 1
+6:6/1/flip_h = true
+6:7/next_alternative_id = 2
+6:7/0 = 0
+6:7/1 = 1
+6:7/1/flip_h = true
+7:6/next_alternative_id = 2
+7:6/0 = 0
+7:6/1 = 1
+7:6/1/flip_h = true
+7:7/next_alternative_id = 3
+7:7/0 = 0
+7:7/1 = 1
+7:7/1/flip_h = true
+4:4/0 = 0
+5:4/0 = 0
+6:4/0 = 0
+7:4/0 = 0
+
+[resource]
+tile_size = Vector2i(32, 32)
+physics_layer_0/collision_layer = 128
+physics_layer_0/collision_mask = 0
+sources/0 = SubResource("TileSetAtlasSource_2cmeo")

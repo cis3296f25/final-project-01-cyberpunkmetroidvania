@@ -1,0 +1,179 @@
+[gd_scene load_steps=27 format=3 uid="uid://c7ife1j08ibaw"]
+
+[ext_resource type="Script" uid="uid://c7dawooavgd2g" path="res://scripts/hado.gd" id="1_rmeio"]
+[ext_resource type="Texture2D" uid="uid://bj2sqm533kyvf" path="res://assets/sprites/projectial animations/hado.png" id="2_c152k"]
+[ext_resource type="Texture2D" uid="uid://dpxnkqospo22p" path="res://assets/sprites/projectial animations/hado end.png" id="3_h36sr"]
+[ext_resource type="Texture2D" uid="uid://dyg0fk30qe7ry" path="res://assets/sprites/projectial animations/hado start.png" id="4_do4ii"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5fam8"]
+atlas = ExtResource("2_c152k")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cb12b"]
+atlas = ExtResource("2_c152k")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c10d4"]
+atlas = ExtResource("2_c152k")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x4kb1"]
+atlas = ExtResource("2_c152k")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4vliq"]
+atlas = ExtResource("2_c152k")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ku1d7"]
+atlas = ExtResource("2_c152k")
+region = Rect2(160, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vtxt1"]
+atlas = ExtResource("2_c152k")
+region = Rect2(192, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xyrjn"]
+atlas = ExtResource("2_c152k")
+region = Rect2(224, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ilxj4"]
+atlas = ExtResource("3_h36sr")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xx4m8"]
+atlas = ExtResource("3_h36sr")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nfffs"]
+atlas = ExtResource("3_h36sr")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wa2ya"]
+atlas = ExtResource("3_h36sr")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sootm"]
+atlas = ExtResource("3_h36sr")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f8r1g"]
+atlas = ExtResource("3_h36sr")
+region = Rect2(160, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jl8mx"]
+atlas = ExtResource("3_h36sr")
+region = Rect2(192, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xjwmx"]
+atlas = ExtResource("3_h36sr")
+region = Rect2(224, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bxc4b"]
+atlas = ExtResource("4_do4ii")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_76bpt"]
+atlas = ExtResource("4_do4ii")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j2mni"]
+atlas = ExtResource("4_do4ii")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_efglm"]
+atlas = ExtResource("4_do4ii")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_mst1a"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5fam8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cb12b")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c10d4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x4kb1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4vliq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ku1d7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vtxt1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xyrjn")
+}],
+"loop": true,
+"name": &"hado",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ilxj4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xx4m8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nfffs")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wa2ya")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sootm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f8r1g")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jl8mx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xjwmx")
+}],
+"loop": true,
+"name": &"hado end",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bxc4b")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_76bpt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_j2mni")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_efglm")
+}],
+"loop": true,
+"name": &"hado start",
+"speed": 12.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_6qtt1"]
+radius = 9.0
+height = 18.0
+
+[node name="Hado" type="Area2D"]
+script = ExtResource("1_rmeio")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_mst1a")
+animation = &"hado"
+frame_progress = 0.090199895
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_6qtt1")

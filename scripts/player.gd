@@ -1,0 +1,591 @@
+extends CharacterBody2D
+
+# --- MOVEMENT CONSTANTS ---
+const SPEED = 120.0
+const ACCEL = 1100.0
+const DECEL = 1600.0
+const AIR_ACCEL = 1000.0
+const AIR_TURN_ACCEL = 2200.0
+
+# --- GRAVITY / JUMP ---
+const JUMP_VELOCITY = -300.0
+const GRAVITY_UP := 700.0
+const GRAVITY_DOWN := 1300.0
+const GRAVITY_CUTOFF := 5000.0
+
+const COYOTE_TIME := 0.05
+const JUMP_BUFFER := 0.12
+
+# --- WALL SLIDE ---
+const WALL_SLIDE_SPEED = 50.0
+const WALL_JUMP_VELOCITY = -300.0
+const WALL_JUMP_HORIZONTAL_BOOST = 200.0
+
+# --- DASH (ROLL) SETTINGS ---
+const DASH_DISTANCE := 150.0
+const DASH_DURATION := 0.15
+const DASH_COOLDOWN := 0.5
+
+# --- PHYSICS ---
+const PLAYER_MASS := 1.0  
+
+# --- ATTACK ---
+var attacking := false
+var is_hado := false
+var HEAVY_DAMAGE = 1.75
+var LIGHT_DAMAGE = 1.00
+var hit_this_swing: Dictionary = {}
+const HITBOX_OFFSET := 8.0
+const MUZZLE_OFFSET := 14.0
+var is_shooting := false
+const BulletScene: PackedScene = preload("res://scenes/bullet.tscn")
+const HadoScene: PackedScene = preload("res://scenes/hado.tscn")
+var hado_active := false
+
+# --- INTERNAL STATE ---
+var coyote_timer: float = 0.0
+var jump_buffer_timer: float = 0.0
+var jump_count = 0
+const MAX_JUMPS = 2
+var facing := Vector2.RIGHT
+var idle_timer = Timer.new()
+#   ^ timer for idle animation after gun is shot
+
+var is_wall_sliding := false
+var is_dashing := false
+var can_dash := true
+
+# --- LANDING SHAKE TRACKING ---
+var landing_velocity: float = 0.0
+const LANDING_VELOCITY_THRESHOLD: float = 600.0  # minimum velocity to trigger shake
+
+# --- ABILITIES ---
+var has_wall_jump := false
+var has_double_jump := false
+
+# --- DAMAGE / I-FRAMES ---
+var invuln := false
+@export var invuln_time := 0.40
+
+# --- NODE REFS ---
+@onready var healthbar = $HealthBar
+@onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
+@onready var collision_shape: CollisionShape2D = $HurtBox/CollisionShape2D
+@onready var invuln_timer: Timer = $InvulnTimer
+
+# Player HurtBox (Area2D)
+@onready var player_hurtbox: Area2D = $HurtBox
+
+# Player ATTACK hitboxes (Areas)
+@onready var lp_hitbox: Area2D = $LPHitbox
+@onready var lp_hitbox_shape: CollisionShape2D = $LPHitbox/LightPunchHitbox
+@onready var hp_hitbox: Area2D = $HPHitbox
+@onready var hp_hitbox_shape: CollisionShape2D = $HPHitbox/HeavyPunchHitbox
+@onready var muzzle: Marker2D = $AnimatedSprite2D/Muzzle
+
+@onready var dashCooldown: Timer = $dashCooldown
+@onready var dashDuration: Timer = $dashDuration
+
+# --- UPGRADE ---
+func apply_permanent_upgrade(health_increase: int, damage_increase: int) -> void:
+	
+	GameState.max_health += health_increase
+	GameState.current_health = GameState.max_health
+	LIGHT_DAMAGE+=damage_increase
+	HEAVY_DAMAGE+=damage_increase
+
+# --- READY ---
+func _ready() -> void:
+	add_to_group("player")
+
+	_hitbox_off_all()
+	_position_hitboxes_ahead()
+
+	# Connect attack hitboxes (guarded)
+	var cb_lp := Callable(self, "_on_light_area_entered")
+	if not lp_hitbox.area_entered.is_connected(cb_lp):
+		lp_hitbox.area_entered.connect(cb_lp)
+	var cb_hp := Callable(self, "_on_heavy_area_entered")
+	if not hp_hitbox.area_entered.is_connected(cb_hp):
+		hp_hitbox.area_entered.connect(cb_hp)
+
+	# Player HurtBox
+	var hb_cb := Callable(self, "_on_hurt_box_body_entered")
+	if not player_hurtbox.body_entered.is_connected(hb_cb):
+		player_hurtbox.body_entered.connect(hb_cb)
+
+	# Invulnability timer
+	if invuln_timer == null:
+		invuln_timer = Timer.new()
+		invuln_timer.name = "InvulnTimer"
+		add_child(invuln_timer)
+	invuln_timer.one_shot = true
+	var cb := Callable(self, "_on_invuln_timeout")
+	if not invuln_timer.timeout.is_connected(cb):
+		invuln_timer.timeout.connect(cb)
+
+	healthbar.initHealth(GameState.current_health, GameState.max_health)
+
+	# Attack animation loop control
+	if animated_sprite_2d.sprite_frames:
+		animated_sprite_2d.sprite_frames.set_animation_loop("light_punch", false)
+		animated_sprite_2d.sprite_frames.set_animation_loop("heavy_punch", false)
+		animated_sprite_2d.sprite_frames.set_animation_loop("hadoken", false)
+	animated_sprite_2d.animation_finished.connect(_on_animation_finished)
+
+	# Room/ability stuff
+	if RoomChangeGlobal.activate:
+		global_position = RoomChangeGlobal.playerPosition
+		if RoomChangeGlobal.jumpOnEnter:
+			velocity.y = JUMP_VELOCITY
+		RoomChangeGlobal.playerDone = true
+	if RoomChangeGlobal.camDone:
+		RoomChangeGlobal.activate = false
+
+	has_double_jump = RoomChangeGlobal.has_double_jump
+	has_wall_jump = RoomChangeGlobal.has_wall_jump
+	
+	# shooting timer
+	idle_timer.one_shot = true
+	idle_timer.wait_time = 1
+	add_child(idle_timer)
+	var idle_cb := Callable(self, "_on_idle_timer_timeout")
+	if not idle_timer.timeout.is_connected(idle_cb):
+		idle_timer.timeout.connect(idle_cb)
+
+# --- PHYSICS ---
+func _physics_process(delta: float) -> void:
+	check_spike_collision()
+
+	# track landing velocity for kinetic energy shake
+	if not is_on_floor() and not is_wall_sliding:
+		landing_velocity = abs(velocity.y)
+	else:
+		# just landed - check if should shake based on impact velocity
+		if is_on_floor() and landing_velocity >= LANDING_VELOCITY_THRESHOLD:
+			# calculate shake strength based on kinetic energy (KE = 0.5 * m * v^2)
+			# since mass is constant, we can simplify to just v^2 for comparison
+			var kinetic_energy = 0.5 * PLAYER_MASS * landing_velocity * landing_velocity
+			var threshold_energy = 0.5 * PLAYER_MASS * LANDING_VELOCITY_THRESHOLD * LANDING_VELOCITY_THRESHOLD
+			var kinetic_factor = kinetic_energy / threshold_energy
+			var shake_strength = clamp(kinetic_factor * 3.0, 2.0, 8.0)  # scale between 2-8
+			trigger_camera_shake(shake_strength, 8.0)
+		if is_on_floor():
+			landing_velocity = 0.0
+
+	# Gravity / coyote / buffer
+	if is_on_floor():
+		coyote_timer = COYOTE_TIME
+		jump_count = 0
+	else:
+		if coyote_timer > 0.0:
+			jump_count = 1
+		coyote_timer = max(coyote_timer - delta, 0.0)
+
+	if jump_buffer_timer > 0.0:
+		jump_buffer_timer = max(jump_buffer_timer - delta, 0.0)
+	if Input.is_action_just_pressed("jump"):
+		jump_buffer_timer = JUMP_BUFFER
+
+	var gravity_to_use := (GRAVITY_UP if velocity.y < 0.0 else GRAVITY_DOWN)
+	if Input.is_action_just_released("jump") and velocity.y < 0.0:
+		gravity_to_use = GRAVITY_CUTOFF
+	if not is_on_floor():
+		velocity.y += gravity_to_use * delta
+
+	# Wall slide
+	is_wall_sliding = false
+	if is_on_wall() and not is_on_floor() and has_wall_jump:
+		is_wall_sliding = true
+		velocity.y = min(velocity.y, WALL_SLIDE_SPEED)
+		if animated_sprite_2d.animation != "wall_slide":
+			animated_sprite_2d.play("wall_slide")
+
+	# Jumping
+	var can_jump := false
+	if jump_count == 0:
+		can_jump = (is_on_floor() or coyote_timer > 0.0)
+	elif has_double_jump:
+		can_jump = (jump_count < MAX_JUMPS)
+	else:
+		can_jump = (jump_count < 1)
+
+	if can_jump and jump_buffer_timer > 0.0:
+		SoundController.play_jump()
+		velocity.y = JUMP_VELOCITY
+		jump_count += 1
+		jump_buffer_timer = 0.0
+		coyote_timer = 0.0
+	elif is_wall_sliding and Input.is_action_just_pressed("jump"):
+		velocity.y = WALL_JUMP_VELOCITY
+		velocity.x = WALL_JUMP_HORIZONTAL_BOOST * -sign(Input.get_axis("move_left", "move_right"))
+		animated_sprite_2d.flip_h = velocity.x < 0
+		is_wall_sliding = false
+		jump_count = 1
+		jump_buffer_timer = 0.0
+
+	# Horizontal
+	var direction := Input.get_axis("move_left", "move_right")
+	var target_speed := direction * SPEED
+
+	if direction > 0.0:
+		animated_sprite_2d.flip_h = false
+		facing = Vector2.RIGHT
+		_position_hitboxes_ahead()
+	elif direction < 0.0:
+		animated_sprite_2d.flip_h = true
+		facing = Vector2.LEFT
+		_position_hitboxes_ahead()
+
+	var accel: float
+	if is_on_floor():
+		accel = (ACCEL if direction != 0.0 else DECEL)
+	else:
+		if direction == 0.0:
+			accel = DECEL
+		else:
+			var vel_sign: int = sign(velocity.x)
+			var dir_sign: int = sign(direction)
+			accel = (AIR_TURN_ACCEL if vel_sign != 0 and dir_sign != 0 and vel_sign != dir_sign else AIR_ACCEL)
+
+	if is_dashing:
+		target_speed *= 2
+		accel *= 3
+
+	velocity.x = move_toward(velocity.x, target_speed, accel * delta)
+
+	# Dash input
+	if Input.is_action_just_pressed("roll") and can_dash:
+		perform_dash()
+
+	if abs(velocity.x) < 5.0:
+		velocity.x = 0.0
+	if is_dashing:
+		velocity.y = 0
+		
+
+	move_and_slide()
+
+func _process(_dt: float) -> void:
+	var attack_pressed := Input.is_action_just_pressed("attack")
+	var heavy_pressed := (
+		Input.is_action_just_pressed("attack_rb")    # controller heavy
+		or (attack_pressed and Input.is_key_pressed(KEY_SHIFT)) # keyboard heavy
+	)
+	
+	_on_hado_spawn_frame()
+	
+	if not attacking and is_on_floor() and not is_wall_sliding:
+		if heavy_pressed:
+			start_heavy_attack_animation()
+		elif attack_pressed:
+			start_light_attack_animation()
+
+	
+	if not is_wall_sliding and Input.is_action_just_pressed("shoot") or Input.is_action_just_pressed("shoot_lb"):
+		if Input.is_key_pressed(KEY_SHIFT) or Input.is_action_pressed("shoot_lb"):
+			hado()
+		else: #not is_shooting and 
+			shoot()
+			
+	if is_hado:
+		velocity.x = 0
+		if animated_sprite_2d.animation != "hadoken":
+			animated_sprite_2d.play("hadoken")
+			animated_sprite_2d.frame = 0  # start from beginning once
+		return  # IMPORTANT: don't let other animation logic run this frame
+		#if not is_shooting:
+			#if velocity.x != 0:
+				#start_walk_shoot_animation()
+			#else:
+				#start_shoot_animation()
+
+	# Animation fallbacks
+	if attacking:
+		if animated_sprite_2d.animation not in ["light_punch", "heavy_punch"]:
+			if Input.is_key_pressed(KEY_SHIFT):
+				start_heavy_attack_animation()
+			else:
+				start_light_attack_animation()
+	else:
+		if is_wall_sliding:
+			if animated_sprite_2d.animation != "wall_slide":
+				animated_sprite_2d.play("wall_slide")
+		else:
+			if animated_sprite_2d.animation == "wall_slide":
+				animated_sprite_2d.stop()
+	
+	#if is_shooting:
+		#if animated_sprite_2d.animation not in ["shoot", "shoot_&_walk"]:
+			#if velocity.x != 0:
+				#start_walk_shoot_animation()
+			#else:
+				#start_shoot_animation()
+	
+	if is_on_floor() and not attacking and not is_wall_sliding: #and not is_shooting:
+		if not is_dashing:
+			if not is_shooting:
+				if abs(velocity.x) > 10.0:
+					if animated_sprite_2d.animation != "new_walk":
+						animated_sprite_2d.play("new_walk")
+				else:
+					if animated_sprite_2d.animation != "new_idle":
+						animated_sprite_2d.play("new_idle")
+			else:
+				if is_shooting:
+					if abs(velocity.x) > 10.0:
+						if animated_sprite_2d.animation != "shoot_&_walk":
+							animated_sprite_2d.play("shoot_&_walk")
+					else:
+						if animated_sprite_2d.animation != "shoot":
+							animated_sprite_2d.play("shoot")
+				#if animated_sprite_2d.animation not in ["shoot", "shoot_&_walk"]:
+					#if velocity.x != 0:
+						#start_walk_shoot_animation()
+					#else:
+						#start_shoot_animation()
+		else:
+			if animated_sprite_2d.animation != "dash":
+				animated_sprite_2d.play("dash")
+				
+	elif not is_on_floor() and not is_wall_sliding: #and not is_shooting:
+		if not is_dashing:
+			if velocity.y > 0:
+				if animated_sprite_2d.animation != "fall":
+					animated_sprite_2d.play("fall")
+			else:
+				if animated_sprite_2d.animation != "jump":
+					animated_sprite_2d.play("jump")
+		else:
+			pass
+
+# -- ATTACK FUNCTIONS --
+func start_light_attack_animation():
+	attacking = true
+	hit_this_swing.clear()
+	_position_hitboxes_ahead()
+	lp_hitbox.monitoring = true
+	lp_hitbox.monitorable = true
+	hp_hitbox.monitoring = false
+	hp_hitbox.monitorable = false
+	animated_sprite_2d.play("light_punch")
+	animated_sprite_2d.frame = 0
+
+func start_heavy_attack_animation():
+	attacking = true
+	hit_this_swing.clear()
+	_position_hitboxes_ahead()
+	hp_hitbox.monitoring = true
+	hp_hitbox.monitorable = true
+	lp_hitbox.monitoring = false
+	lp_hitbox.monitorable = false
+	animated_sprite_2d.play("heavy_punch")
+	animated_sprite_2d.frame = 0
+	
+func shoot():
+	is_shooting = true
+	idle_timer.start()
+	print("shooting a shot!")
+	
+	#spawn bullet
+	var bullet = BulletScene.instantiate()
+	bullet.global_position = muzzle.global_position
+	if facing == Vector2.RIGHT:
+		bullet.direction = Vector2.RIGHT
+	else:
+		bullet.direction = Vector2.LEFT
+	get_tree().current_scene.add_child(bullet)
+	pass
+	
+func hado():
+	if is_hado:
+		return
+		
+	is_hado = true
+	is_shooting = false
+	velocity.x = 0
+	
+	#is_shooting = true #here for placeholder animation
+	print("hadoken!")
+	#idle_timer.start() #part of placeholder
+	
+
+func _spawn_hado():
+	var hadoken = HadoScene.instantiate()
+	hadoken.global_position = muzzle.global_position
+	if facing == Vector2.RIGHT:
+		hadoken.direction = Vector2.RIGHT
+	else:
+		hadoken.direction = Vector2.LEFT
+	get_tree().current_scene.add_child(hadoken)
+	
+func _on_hado_spawn_frame() -> void:
+	if animated_sprite_2d.animation == "hadoken" and animated_sprite_2d.frame == 6 and hado_active == false:
+		_spawn_hado()
+		hado_active = true
+	
+func start_shoot_animation():
+	is_shooting = true
+	#animated_sprite_2d.play("shoot")
+	#animated_sprite_2d.frame = 0
+	idle_timer.start()
+
+func start_walk_shoot_animation():
+	is_shooting = true
+	#animated_sprite_2d.play("shoot_&_walk")
+	#animated_sprite_2d.frame = 0
+	idle_timer.start()
+	
+func _on_idle_timer_timeout() -> void:
+	is_shooting = false
+	
+	#if is_on_floor() and not attacking and not is_wall_sliding and not is_dashing:
+		#if animated_sprite_2d.animation not in ["new_idle", "new_walk"]:
+			#animated_sprite_2d.play("new_idle")
+
+func _on_animation_finished() -> void:
+	match animated_sprite_2d.animation:
+		"light_punch", "heavy_punch":
+			attacking = false
+			_hitbox_off_all()
+		"hadoken":
+			if is_hado:
+				hado_active = false
+				is_hado = false
+	#if not is_shooting and not attacking:
+		#animated_sprite_2d.play("new_idle")
+
+# --- DASH ---
+func perform_dash() -> void:
+	SoundController.play_dash()
+	is_dashing = true
+	can_dash = false
+	collision_shape.disabled = true
+	dashDuration.start()
+
+func _on_dash_duration_timeout() -> void:
+	collision_shape.disabled = false
+	is_dashing = false
+	dashCooldown.start()
+
+func _on_dash_cooldown_timeout() -> void:
+	can_dash = true
+
+# --- SPIKES ---
+func check_spike_collision() -> void:
+	var spike_layer = get_tree().get_first_node_in_group("spikes")
+	if spike_layer and spike_layer is TileMapLayer:
+		var tile_pos = spike_layer.local_to_map(spike_layer.to_local(global_position))
+		var tile_data = spike_layer.get_cell_tile_data(tile_pos)
+		if tile_data != null:
+			SoundController.play_death()
+			print("Player is on a spike tile!")
+			await get_tree().create_timer(0.15).timeout
+			call_deferred("reload_scene")
+
+# -- PLAYER HURTBOX --
+func _on_hurt_box_body_entered(body: Node2D) -> void:
+	if invuln:
+		return
+	if body.is_in_group("enemy"):
+		var dir: Vector2 = (global_position - body.global_position).normalized()
+		if dir == Vector2.ZERO:
+			dir = Vector2.RIGHT
+		var src_pos: Vector2 = body.global_position
+		take_damage(1.0, dir, src_pos)
+	print("damage taken")
+
+
+# -- Hitbox turnoff --
+func _hitbox_off_all() -> void:
+	lp_hitbox.monitoring = false
+	lp_hitbox.monitorable = false
+	hp_hitbox.monitoring = false
+	hp_hitbox.monitorable = false
+
+func _position_hitboxes_ahead() -> void:
+	hp_hitbox.position = Vector2(HITBOX_OFFSET * facing.x, 0)
+	lp_hitbox.position = Vector2(HITBOX_OFFSET * facing.x, 0)
+	muzzle.position = Vector2(MUZZLE_OFFSET * facing.x, 0)
+
+# -- Player hitbox overlaps enemy --
+func _on_light_area_entered(area: Area2D) -> void:
+	_register_hit(area, LIGHT_DAMAGE, lp_hitbox.global_position)
+
+func _on_heavy_area_entered(area: Area2D) -> void:
+	_register_hit(area, HEAVY_DAMAGE, hp_hitbox.global_position)
+
+func _register_hit(area: Area2D, damage: float, src_pos: Vector2) -> void:
+	if area in hit_this_swing:
+		return
+	hit_this_swing[area] = true
+
+	var enemy := area.get_parent()
+	if enemy and enemy.is_in_group("enemy") and enemy.has_method("take_damage"):
+		enemy.take_damage(damage, facing, src_pos)
+
+# --- PUBLIC: called by ENEMY when its Hitbox hits player HurtBox ---
+func take_damage(amount: float, hit_dir: Vector2, source_pos: Vector2) -> void:
+	if invuln:
+		return
+	_take_damage(amount, hit_dir, source_pos)
+
+func _on_invuln_timeout() -> void:
+	invuln = false
+	animated_sprite_2d.modulate = Color(1,1,1)
+
+func _take_damage(damage: float, hit_dir: Vector2, source_pos: Vector2) -> void:
+	invuln = true
+	invuln_timer.start(invuln_time)
+	SoundController.play_hurt()
+	GameState.current_health -= damage
+
+
+	if is_instance_valid(healthbar) and healthbar.has_method("updateHealth"):
+		healthbar.updateHealth(GameState.current_health)
+
+	# trigger screen shake when taking damage
+	trigger_camera_shake(3.0, 8.0)  
+
+	# visual knockback
+	animated_sprite_2d.modulate = Color(1, 0.7, 0.7)
+
+	# Build knockback vector
+	var kb: Vector2 = hit_dir
+	if kb == Vector2.ZERO:
+		# Fallback: push away from the source horizontally
+		var xsign: int = sign(global_position.x - source_pos.x)
+		if xsign == 0:
+			xsign = 1
+		kb = Vector2(xsign, 0)
+	else:
+		kb = kb.normalized()
+
+	# Apply knockback
+	var H := 600.0
+	var V := -150.0
+	velocity = Vector2(kb.x * H, V)
+	
+	if GameState.current_health <= 0:
+		SoundController.play_death()
+		print("Player died")
+		await get_tree().create_timer(0.15).timeout
+		call_deferred("reload_scene") 
+		GameState.current_health = GameState.max_health
+
+# --- MISC ---
+func _on_hurtbox_spike_body_entered(body: Node2D) -> void:
+	if body.is_in_group("spikes"):
+		SoundController.play_death()
+		print("Player touched spikes")
+		await get_tree().create_timer(0.15).timeout
+		call_deferred("reload_scene") 
+		
+func reload_scene() -> void:
+	get_tree().reload_current_scene()
+
+# --- SCREEN SHAKE ---
+func trigger_camera_shake(strength: float = 10.0, decay: float = 5.0) -> void: #default parameters for fallbacks
+	var camera = get_viewport().get_camera_2d()
+	if camera and camera.has_method("apply_shake"):
+		camera.apply_shake(strength, decay)

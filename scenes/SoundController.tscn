@@ -1,0 +1,47 @@
+[gd_scene load_steps=12 format=3 uid="uid://cc03ott63xw1y"]
+
+[ext_resource type="Script" uid="uid://cq1hw7c72o3db" path="res://scripts/sound_controller.gd" id="1_xfodn"]
+[ext_resource type="AudioStream" uid="uid://djyjise4qu42w" path="res://assets/sounds/jump.wav" id="2_opjcy"]
+[ext_resource type="AudioStream" uid="uid://dauh6je1a1xtw" path="res://assets/sounds/coin.wav" id="3_fnpbt"]
+[ext_resource type="AudioStream" uid="uid://cd3if61gp53ay" path="res://assets/sounds/power_up.wav" id="4_fnpbt"]
+[ext_resource type="AudioStream" uid="uid://bi3aihh6egamy" path="res://assets/sounds/hurt.wav" id="5_ajkww"]
+[ext_resource type="AudioStream" uid="uid://bk4d28crkagwu" path="res://assets/sounds/death.wav" id="6_ajkww"]
+[ext_resource type="AudioStream" uid="uid://b677ax0wv5xjs" path="res://assets/sounds/dash.wav" id="7_ago7b"]
+[ext_resource type="AudioStream" uid="uid://dyajk07rf2utw" path="res://assets/music/Cyberpunk Moonlight Sonata.mp3" id="8_gn7l4"]
+[ext_resource type="AudioStream" uid="uid://dmnauooegajck" path="res://assets/music/Boss_Fight_Music_trim.wav" id="9_yqc1d"]
+[ext_resource type="AudioStream" uid="uid://2pw6pmvnpyh5" path="res://assets/sounds/explosion.wav" id="10_gn7l4"]
+[ext_resource type="AudioStream" uid="uid://d25wyry888ein" path="res://assets/sounds/tap.wav" id="11_3u1q0"]
+
+[node name="SoundController" type="Node2D"]
+script = ExtResource("1_xfodn")
+
+[node name="jump" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_opjcy")
+
+[node name="coin" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_fnpbt")
+
+[node name="power_up" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_fnpbt")
+
+[node name="hurt" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_ajkww")
+
+[node name="death" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("6_ajkww")
+
+[node name="dash" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("7_ago7b")
+
+[node name="music" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("8_gn7l4")
+volume_db = -5.073
+
+[node name="boss_music" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("9_yqc1d")
+
+[node name="enemy_death" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("10_gn7l4")
+
+[node name="hit_marker" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("11_3u1q0")

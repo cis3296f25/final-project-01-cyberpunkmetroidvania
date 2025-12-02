@@ -1,0 +1,13 @@
+[gd_scene load_steps=4 format=3 uid="uid://dqscwiiy1v67c"]
+
+[ext_resource type="Script" uid="uid://cj3knel8qcjok" path="res://scripts/game_loop.gd" id="1_43akg"]
+[ext_resource type="PackedScene" uid="uid://ns3pwpuaqeh2" path="res://scenes/rooms/room_1.tscn" id="2_g34oh"]
+[ext_resource type="PackedScene" uid="uid://bl4xf88rcefnd" path="res://scenes/rooms/room_2.tscn" id="3_17ir4"]
+
+[node name="Game Loop" type="Node2D"]
+script = ExtResource("1_43akg")
+
+[node name="Room 1" parent="." instance=ExtResource("2_g34oh")]
+
+[node name="Room 2" parent="." instance=ExtResource("3_17ir4")]
+visible = false
