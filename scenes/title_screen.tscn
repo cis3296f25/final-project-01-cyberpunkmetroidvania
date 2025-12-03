@@ -31,10 +31,10 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 50
 text = "Start"
 
-[node name="Options" type="Button" parent="Control/CenterContainer/VBoxContainer"]
+[node name="Controls" type="Button" parent="Control/CenterContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
-text = "Options"
+text = "Controls"
 
 [node name="Quit" type="Button" parent="Control/CenterContainer/VBoxContainer"]
 layout_mode = 2
@@ -42,5 +42,5 @@ theme_override_font_sizes/font_size = 50
 text = "Quit"
 
 [connection signal="pressed" from="Control/CenterContainer/VBoxContainer/Start" to="." method="_on_start_pressed"]
-[connection signal="pressed" from="Control/CenterContainer/VBoxContainer/Options" to="." method="_on_options_pressed"]
+[connection signal="pressed" from="Control/CenterContainer/VBoxContainer/Controls" to="." method="_on_options_pressed"]
 [connection signal="pressed" from="Control/CenterContainer/VBoxContainer/Quit" to="." method="_on_quit_pressed"]

@@ -19,8 +19,7 @@ func _on_start_pressed() -> void:
 
 
 func _on_options_pressed() -> void:
-	# options coming later
-	pass
+	get_tree().change_scene_to_file("res://scenes/controls_screen.tscn")
 
 
 func _on_quit_pressed() -> void:
