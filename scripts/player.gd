@@ -370,6 +370,7 @@ func start_light_attack_animation():
 	hp_hitbox.monitorable = false
 	animated_sprite_2d.play("light_punch")
 	animated_sprite_2d.frame = 0
+	SoundController.play_punch()
 
 func start_heavy_attack_animation():
 	attacking = true
@@ -381,11 +382,13 @@ func start_heavy_attack_animation():
 	lp_hitbox.monitorable = false
 	animated_sprite_2d.play("heavy_punch")
 	animated_sprite_2d.frame = 0
+	SoundController.play_heavy_punch()
 	
 func shoot():
 	is_shooting = true
 	idle_timer.start()
 	print("shooting a shot!")
+	SoundController.play_shoot()
 	
 	#spawn bullet
 	var bullet = BulletScene.instantiate()
@@ -404,6 +407,7 @@ func hado():
 	is_hado = true
 	is_shooting = false
 	velocity.x = 0
+	SoundController.play_heavy_shoot()
 	
 	#is_shooting = true #here for placeholder animation
 	print("hadoken!")
