@@ -1,0 +1,72 @@
+[gd_scene load_steps=2 format=3 uid="uid://d2uqj2mitc3f0"]
+
+[ext_resource type="Script" uid="uid://dm4alsrq4kqr4" path="res://scenes/controls_screen.gd" id="1_bmue2"]
+
+[node name="ControlsScreen" type="Node2D"]
+script = ExtResource("1_bmue2")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
+
+[node name="CenterContainer" type="CenterContainer" parent="Control"]
+layout_mode = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/CenterContainer"]
+custom_minimum_size = Vector2(1000, 800)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Control/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 80
+text = "Controls"
+horizontal_alignment = 1
+
+[node name="Label3" type="Label" parent="Control/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "Keyboard Support"
+horizontal_alignment = 1
+
+[node name="Label2" type="Label" parent="Control/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "Move Right - D or Right Arrow Key
+Move Left - A or Left Arrow Key
+Jump - Space Bar or W
+Melee Attack - T
+Heavy Melee Attack - Hold Shift + T
+Ranged Attack - R
+Heavy Ranged Attack - Hold Shift + R
+Dash - P "
+horizontal_alignment = 1
+
+[node name="Label4" type="Label" parent="Control/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "Controller Support"
+horizontal_alignment = 1
+
+[node name="Label5" type="Label" parent="Control/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "Move Right - Hold Stick to the Right or Right on DPad
+Move Left - Hold Stick to the Left 
+Jump - A
+Melee Attack - Right Trigger
+Heavy Melee Attack - Right Bumper
+Ranged Attack - Left Trigger
+Heavy Ranged Attack - Left Bumper
+Dash - B"
+horizontal_alignment = 1
+
+[node name="Button" type="Button" parent="Control/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Back to Main Menu"
+
+[connection signal="pressed" from="Control/CenterContainer/VBoxContainer/Button" to="." method="_on_button_pressed"]
