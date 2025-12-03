@@ -1,0 +1,39 @@
+[gd_scene load_steps=3 format=3 uid="uid://bd1mybhiatixm"]
+
+[ext_resource type="Texture2D" uid="uid://c8g4owbypiqoo" path="res://assets/sprites/fnaftestimage.png" id="1_2q3n3"]
+[ext_resource type="Script" uid="uid://v4tujgjqvih5" path="res://scenes/story_scene.gd" id="1_glxco"]
+
+[node name="StoryScene" type="Node2D"]
+script = ExtResource("1_glxco")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
+
+[node name="CenterContainer" type="CenterContainer" parent="Control"]
+layout_mode = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/CenterContainer"]
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="Control/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(1000, 500)
+layout_mode = 2
+texture = ExtResource("1_2q3n3")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="Control/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+text = "THIS IS TEMPORARY TEXT. STORY WILL BE ADDED LATER"
+
+[node name="Button" type="Button" parent="Control/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "I'M READY TO BEGIN..."
+
+[connection signal="pressed" from="Control/CenterContainer/VBoxContainer/Button" to="." method="_on_button_pressed"]
