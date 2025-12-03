@@ -20,6 +20,14 @@ func play_enemy_death():
 	$enemy_death.play()
 func play_hit_marker():
 	$hit_marker.play()
+func play_punch():
+	$punch.play()
+func play_heavy_punch():
+	$heavy_punch.play()
+func play_shoot():
+	$shoot.play()
+func play_heavy_shoot():
+	$heavy_shoot.play()
 
 func play_music():
 	if not $music.playing:
