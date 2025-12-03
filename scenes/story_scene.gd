@@ -1,7 +1,7 @@
 extends Node2D
 
 func _ready() -> void:
-	pass
+	$Control/CenterContainer/VBoxContainer/Button.grab_focus()
 
 func _process(delta: float) -> void:
 	# Controller A button OR Enter/Return key
