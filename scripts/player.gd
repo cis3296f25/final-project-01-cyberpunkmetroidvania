@@ -40,6 +40,13 @@ const MUZZLE_OFFSET := 14.0
 var is_shooting := false
 const BulletScene: PackedScene = preload("res://scenes/bullet.tscn")
 const HadoScene: PackedScene = preload("res://scenes/hado.tscn")
+
+# --- INPUT LOGGING (for combo system) ---
+var input_history: Array = []  # stores {input: String, frame: int}
+var current_frame: int = 0
+const MAX_INPUT_HISTORY := 20  # keep last 20 inputs
+var last_input: String = ""  # track to avoid duplicate consecutive logs
+
 var hado_active := false
 
 # --- INTERNAL STATE ---
@@ -93,6 +100,95 @@ func apply_permanent_upgrade(health_increase: int, damage_increase: int) -> void
 	GameState.current_health = GameState.max_health
 	LIGHT_DAMAGE+=damage_increase
 	HEAVY_DAMAGE+=damage_increase
+
+# --- INPUT LOGGING ---
+func _log_player_inputs() -> void:
+	var inputs_detected: Array = []
+	
+	#check all currently pressed inputs
+	var current_inputs: Array = []
+	
+	#directional inputs 
+	if Input.is_action_pressed("move_left"):
+		current_inputs.append("LEFT")
+	if Input.is_action_pressed("move_right"):
+		current_inputs.append("RIGHT")
+	
+	#jump
+	if Input.is_action_pressed("jump"):
+		current_inputs.append("JUMP")
+	
+	#dash/roll
+	if Input.is_action_pressed("roll"):
+		current_inputs.append("DASH")
+	
+	#attack variations
+	if Input.is_action_pressed("attack_rb") or (Input.is_action_pressed("attack") and Input.is_key_pressed(KEY_SHIFT)):
+		current_inputs.append("HEAVY_ATTACK")
+	elif Input.is_action_pressed("attack"):
+		current_inputs.append("LIGHT_ATTACK")
+	
+	#shoot variations
+	if Input.is_action_pressed("shoot_lb") or (Input.is_action_pressed("shoot") and Input.is_key_pressed(KEY_SHIFT)):
+		current_inputs.append("HADOKEN")
+	elif Input.is_action_pressed("shoot"):
+		current_inputs.append("SHOOT")
+	
+	# check for just_pressed to trigger logging
+	var just_pressed: bool = false
+	just_pressed = just_pressed or Input.is_action_just_pressed("move_left")
+	just_pressed = just_pressed or Input.is_action_just_pressed("move_right")
+	just_pressed = just_pressed or Input.is_action_just_pressed("jump")
+	just_pressed = just_pressed or Input.is_action_just_pressed("roll")
+	just_pressed = just_pressed or Input.is_action_just_pressed("attack")
+	just_pressed = just_pressed or Input.is_action_just_pressed("attack_rb")
+	just_pressed = just_pressed or Input.is_action_just_pressed("shoot")
+	just_pressed = just_pressed or Input.is_action_just_pressed("shoot_lb")
+	
+	#build combined input string
+	var input_detected: String = ""
+	if current_inputs.size() > 0:
+		input_detected = " + ".join(current_inputs)
+	
+	#log when a new input is pressed and it's different from the last one
+	if just_pressed and input_detected != "" and input_detected != last_input:
+		_add_input_to_history(input_detected)
+		last_input = input_detected
+	
+	#reset last_input when no input is being pressed
+	if current_inputs.size() == 0:
+		last_input = ""
+
+func _add_input_to_history(input_name: String) -> void:
+	var frame_since_last: int = 0
+	
+	if input_history.size() > 0:
+		var last_entry = input_history[input_history.size() - 1]
+		frame_since_last = current_frame - last_entry.frame
+	else:
+		frame_since_last = current_frame
+	
+	var entry = {
+		"input": input_name,
+		"frame": current_frame,
+		"frames_since_last": frame_since_last
+	}
+	
+	input_history.append(entry)
+	
+	# Keep only the last MAX_INPUT_HISTORY inputs
+	if input_history.size() > MAX_INPUT_HISTORY:
+		input_history.pop_front()
+	
+	# Print to console
+	_print_input_history()
+
+func _print_input_history() -> void:
+	print("\n=== INPUT HISTORY ===")
+	for i in range(input_history.size()):
+		var entry = input_history[i]
+		print("[%d] %s (%d frames)" % [i + 1, entry.input, entry.frames_since_last])
+	print("=====================\n")
 
 # --- READY ---
 func _ready() -> void:
@@ -155,7 +251,11 @@ func _ready() -> void:
 
 # --- PHYSICS ---
 func _physics_process(delta: float) -> void:
+	current_frame += 1
 	check_spike_collision()
+
+	#log inputs for combo system
+	_log_player_inputs()
 
 	# track landing velocity for kinetic energy shake
 	if not is_on_floor() and not is_wall_sliding:
