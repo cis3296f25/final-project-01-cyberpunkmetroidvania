@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://boteeh8pae6yd" path="res://scenes/rooms/item_get_room.gd" id="1_ljfxb"]
 [ext_resource type="TileSet" uid="uid://cde4wxs14s2l0" path="res://assets/tilesets/back_fore_32_set.tres" id="1_mux0k"]
 [ext_resource type="TileSet" uid="uid://djepbnc3vr1ce" path="res://assets/tilesets/new back_set.tres" id="2_ir57b"]
+[ext_resource type="PackedScene" uid="uid://cj8kvfec2uuq" path="res://scenes/level stuff/Parallax Background.tscn" id="2_mmu6j"]
 [ext_resource type="PackedScene" uid="uid://cs04855ow3t40" path="res://scenes/coin.tscn" id="3_vwe15"]
 [ext_resource type="PackedScene" uid="uid://bmar3kpdyosnu" path="res://scenes/level stuff/door.tscn" id="4_bdo30"]
 [ext_resource type="TileSet" uid="uid://i4nma5hm3kyn" path="res://assets/tilesets/new mid_set.tres" id="4_mmu6j"]
@@ -14,6 +15,10 @@ size = Vector2(63, 64)
 
 [node name="ItemGetRoom" type="Node2D"]
 script = ExtResource("1_ljfxb")
+
+[node name="Parallax" parent="." instance=ExtResource("2_mmu6j")]
+position = Vector2(-77, -132)
+scale = Vector2(0.285, 0.285)
 
 [node name="TileMap" type="Node" parent="."]
 

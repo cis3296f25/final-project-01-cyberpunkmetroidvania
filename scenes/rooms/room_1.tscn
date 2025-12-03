@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=4 uid="uid://ns3pwpuaqeh2"]
+[gd_scene load_steps=19 format=4 uid="uid://ns3pwpuaqeh2"]
 
 [ext_resource type="Script" uid="uid://c08aqxxpbp5xj" path="res://scripts/room_1.gd" id="1_irjyx"]
 [ext_resource type="PackedScene" uid="uid://b3hjlgmu1lcvb" path="res://scenes/player.tscn" id="2_xhekj"]
@@ -12,6 +12,7 @@
 [ext_resource type="TileSet" uid="uid://i4nma5hm3kyn" path="res://assets/tilesets/new mid_set.tres" id="7_whcv4"]
 [ext_resource type="Texture2D" uid="uid://bnw1faqo2vr1b" path="res://Untitled.png" id="11_38fm3"]
 [ext_resource type="AudioStream" uid="uid://f56k4xf175uk" path="res://assets/sounds/Powerup_collect.wav" id="12_wrk0s"]
+[ext_resource type="PackedScene" uid="uid://cj8kvfec2uuq" path="res://scenes/level stuff/Parallax Background.tscn" id="13_rgk8g"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0akh5"]
 size = Vector2(64, 64)
@@ -54,6 +55,10 @@ radius = 15.033297
 
 [node name="Room 1" type="Node2D"]
 script = ExtResource("1_irjyx")
+
+[node name="Parallax" parent="." instance=ExtResource("13_rgk8g")]
+position = Vector2(735.99994, -165.00002)
+scale = Vector2(0.84, 0.84)
 
 [node name="Player" parent="." groups=["player"] instance=ExtResource("2_xhekj")]
 

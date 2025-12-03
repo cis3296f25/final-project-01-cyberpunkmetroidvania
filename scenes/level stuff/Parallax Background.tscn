@@ -1,0 +1,76 @@
+[gd_scene load_steps=8 format=3 uid="uid://cj8kvfec2uuq"]
+
+[ext_resource type="Texture2D" uid="uid://vgtagn6gkcij" path="res://assets/sprites/parallax/Back.png" id="1_u2jel"]
+[ext_resource type="Texture2D" uid="uid://bjvfee5fatdwa" path="res://assets/sprites/parallax/buildings 4.png" id="2_d8hyb"]
+[ext_resource type="Texture2D" uid="uid://caymhtq5rtnej" path="res://assets/sprites/parallax/buildings 3.png" id="3_j85x6"]
+[ext_resource type="Texture2D" uid="uid://brxl3s4xhief1" path="res://assets/sprites/parallax/clouds 1.png" id="4_h4u3s"]
+[ext_resource type="Texture2D" uid="uid://b2xmdw4xuwibi" path="res://assets/sprites/parallax/buildings 2.png" id="5_2fe61"]
+[ext_resource type="Texture2D" uid="uid://63r3gbmi4n70" path="res://assets/sprites/parallax/buildings 1.png" id="6_yuod7"]
+[ext_resource type="Texture2D" uid="uid://c0hmkq18d5b08" path="res://assets/sprites/parallax/funny stuff.png" id="7_tci51"]
+
+[node name="Parallax" type="Node2D"]
+z_index = -10
+
+[node name="Back" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.05, 1)
+repeat_size = Vector2(1280, 0)
+repeat_times = 3
+
+[node name="Back" type="Sprite2D" parent="Back"]
+texture = ExtResource("1_u2jel")
+centered = false
+
+[node name="Buildings 4" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.1, 1)
+repeat_size = Vector2(1280, 0)
+repeat_times = 3
+
+[node name="Buildings 4" type="Sprite2D" parent="Buildings 4"]
+texture = ExtResource("2_d8hyb")
+centered = false
+
+[node name="BUildings 3" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.15, 1)
+repeat_size = Vector2(1280, 0)
+repeat_times = 3
+
+[node name="Buildings 3" type="Sprite2D" parent="BUildings 3"]
+texture = ExtResource("3_j85x6")
+centered = false
+
+[node name="Clouds" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.2, 1)
+repeat_size = Vector2(1280, 0)
+autoscroll = Vector2(30, 0)
+repeat_times = 3
+
+[node name="Clouds" type="Sprite2D" parent="Clouds"]
+texture = ExtResource("4_h4u3s")
+centered = false
+
+[node name="Buildings 2" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.25, 1)
+repeat_size = Vector2(1280, 0)
+repeat_times = 3
+
+[node name="Buildings 2" type="Sprite2D" parent="Buildings 2"]
+texture = ExtResource("5_2fe61")
+centered = false
+
+[node name="Buildings 1" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.3, 1)
+repeat_size = Vector2(1280, 0)
+repeat_times = 3
+
+[node name="Buildings 1" type="Sprite2D" parent="Buildings 1"]
+texture = ExtResource("6_yuod7")
+centered = false
+
+[node name="Funny Stuff" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.35, 1)
+repeat_size = Vector2(1280, 0)
+repeat_times = 3
+
+[node name="Funny Stuff" type="Sprite2D" parent="Funny Stuff"]
+texture = ExtResource("7_tci51")
+centered = false
