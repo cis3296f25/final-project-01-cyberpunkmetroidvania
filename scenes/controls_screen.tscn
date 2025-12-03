@@ -25,6 +25,7 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 80
 text = "Controls"
 horizontal_alignment = 1
+paragraph_separator = "\\"
 
 [node name="Label3" type="Label" parent="Control/CenterContainer/VBoxContainer"]
 layout_mode = 2
@@ -44,12 +45,14 @@ Ranged Attack - R
 Heavy Ranged Attack - Hold Shift + R
 Dash - P "
 horizontal_alignment = 1
+paragraph_separator = "\\"
 
 [node name="Label4" type="Label" parent="Control/CenterContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
 text = "Controller Support"
 horizontal_alignment = 1
+paragraph_separator = "\\"
 
 [node name="Label5" type="Label" parent="Control/CenterContainer/VBoxContainer"]
 layout_mode = 2
@@ -63,6 +66,7 @@ Ranged Attack - Left Trigger
 Heavy Ranged Attack - Left Bumper
 Dash - B"
 horizontal_alignment = 1
+paragraph_separator = "\\"
 
 [node name="Button" type="Button" parent="Control/CenterContainer/VBoxContainer"]
 layout_mode = 2
