@@ -418,3 +418,6 @@ autoplay = "elevator1"
 
 [node name="Coin" parent="." instance=ExtResource("9_cdooi")]
 position = Vector2(175, -223)
+
+[node name="CyborgSlime2" parent="." instance=ExtResource("9_rxrds")]
+position = Vector2(-274, -192)

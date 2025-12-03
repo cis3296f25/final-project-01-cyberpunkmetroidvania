@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://cc03ott63xw1y"]
+[gd_scene load_steps=18 format=3 uid="uid://cc03ott63xw1y"]
 
 [ext_resource type="Script" uid="uid://cq1hw7c72o3db" path="res://scripts/sound_controller.gd" id="1_xfodn"]
 [ext_resource type="AudioStream" uid="uid://djyjise4qu42w" path="res://assets/sounds/jump.wav" id="2_opjcy"]
@@ -15,6 +15,8 @@
 [ext_resource type="AudioStream" uid="uid://bvuxtpnmn4clm" path="res://assets/sounds/HeavyPunch.wav" id="13_3cxr2"]
 [ext_resource type="AudioStream" uid="uid://bvmee7f1v068s" path="res://assets/sounds/shoot.wav" id="14_233xp"]
 [ext_resource type="AudioStream" uid="uid://bkir3awed3vp" path="res://assets/sounds/HeavyShoot.mp3" id="15_tmuis"]
+[ext_resource type="AudioStream" uid="uid://cmuly44b1fgyt" path="res://assets/sounds/SmashCongratulations.mp3" id="16_233xp"]
+[ext_resource type="AudioStream" uid="uid://b2gbkkccv71ix" path="res://assets/music/fnafEndingMusicTemp.mp3" id="17_tmuis"]
 
 [node name="SoundController" type="Node2D"]
 script = ExtResource("1_xfodn")
@@ -61,3 +63,10 @@ stream = ExtResource("14_233xp")
 
 [node name="heavy_shoot" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("15_tmuis")
+
+[node name="congrats" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("16_233xp")
+
+[node name="musicBox" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("17_tmuis")
+volume_db = -4.771

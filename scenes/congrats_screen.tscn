@@ -1,0 +1,40 @@
+[gd_scene load_steps=3 format=3 uid="uid://djssqeaksl3dm"]
+
+[ext_resource type="Script" uid="uid://7k0vtop4bybo" path="res://congrats_screen.gd" id="1_5k0su"]
+[ext_resource type="Texture2D" uid="uid://c5e62s6xfsyps" path="res://assets/sprites/fnafCongratsTemp.png" id="2_k5e21"]
+
+[node name="congrats_screen" type="Node2D"]
+script = ExtResource("1_5k0su")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
+
+[node name="CenterContainer" type="CenterContainer" parent="Control"]
+layout_mode = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/CenterContainer"]
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="Control/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(800, 600)
+layout_mode = 2
+texture = ExtResource("2_k5e21")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="Control/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "CONGRATULATIONS! YOU HAVE COMPLETED THE GAME!"
+horizontal_alignment = 1
+
+[node name="Button" type="Button" parent="Control/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "Quit"
+
+[connection signal="pressed" from="Control/CenterContainer/VBoxContainer/Button" to="." method="_on_button_pressed"]
