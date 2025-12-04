@@ -96,6 +96,7 @@ func _die() -> void:
 		body_shape.set_deferred("disabled", true)
 
 	queue_free()
+	get_tree().change_scene_to_file("res://scenes/congrats_screen.tscn")
 
 func _on_invuln_timeout() -> void:
 	invuln = false

@@ -39,3 +39,7 @@ func play_boss_music():
 		$boss_music.play()
 func stop_boss_music():
 	$boss_music.stop()
+func play_congrats():
+	$congrats.play()
+func play_ending_music():
+	$musicBox.play()

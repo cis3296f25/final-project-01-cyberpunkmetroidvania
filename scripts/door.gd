@@ -26,4 +26,6 @@ func _on_body_entered(body: Node2D) -> void:
 		RoomChangeGlobal.jumpOnEnter = jumpOnEnter
 		RoomChangeGlobal.has_double_jump = body.has_double_jump
 		RoomChangeGlobal.has_wall_jump = body.has_wall_jump
+		FadeTransition.transition()
+		FadeTransition.animationPlayer.play("fadeToNormal")
 		get_tree().call_deferred("change_scene_to_file", nextRoom)
