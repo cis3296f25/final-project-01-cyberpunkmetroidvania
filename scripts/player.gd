@@ -113,6 +113,8 @@ func _log_player_inputs() -> void:
 		current_inputs.append("LEFT")
 	if Input.is_action_pressed("move_right"):
 		current_inputs.append("RIGHT")
+	if Input.is_action_pressed("down"):
+		current_inputs.append("DOWN")
 	
 	#jump
 	if Input.is_action_pressed("jump"):
@@ -138,6 +140,7 @@ func _log_player_inputs() -> void:
 	var just_pressed: bool = false
 	just_pressed = just_pressed or Input.is_action_just_pressed("move_left")
 	just_pressed = just_pressed or Input.is_action_just_pressed("move_right")
+	just_pressed = just_pressed or Input.is_action_just_pressed("down")
 	just_pressed = just_pressed or Input.is_action_just_pressed("jump")
 	just_pressed = just_pressed or Input.is_action_just_pressed("roll")
 	just_pressed = just_pressed or Input.is_action_just_pressed("attack")
@@ -149,15 +152,19 @@ func _log_player_inputs() -> void:
 	var input_detected: String = ""
 	if current_inputs.size() > 0:
 		input_detected = " + ".join(current_inputs)
+	else:
+		# neutral state - no buttons pressed
+		input_detected = "NEUTRAL"
 	
 	#log when a new input is pressed and it's different from the last one
 	if just_pressed and input_detected != "" and input_detected != last_input:
 		_add_input_to_history(input_detected)
 		last_input = input_detected
 	
-	#reset last_input when no input is being pressed
-	if current_inputs.size() == 0:
-		last_input = ""
+	#reset last_input when returning to neutral
+	if current_inputs.size() == 0 and last_input != "NEUTRAL":
+		_add_input_to_history("NEUTRAL")
+		last_input = "NEUTRAL"
 
 func _add_input_to_history(input_name: String) -> void:
 	var frame_since_last: int = 0
