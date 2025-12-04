@@ -42,8 +42,15 @@ const BulletScene: PackedScene = preload("res://scenes/bullet.tscn")
 const HadoScene: PackedScene = preload("res://scenes/hado.tscn")
 
 # --- INPUT LOGGING (for combo system) ---
-var input_history: Array = []  # stores {input: String, frame: int}
+# 2D array structure: [row][column]
+# Row 0: frames held
+# Row 1: direction (numpad notation)
+# Row 2: button press
+var input_history: Array = [[],[],[]]  # 3x20 array for last 20 inputs
 var current_frame: int = 0
+var input_start_frame: int = 0  # when the current input started
+var current_direction: int = 5  # track current direction being held
+var current_button: int = -1    # track current button being held
 const MAX_INPUT_HISTORY := 20  # keep last 20 inputs
 var last_input: String = ""  # track to avoid duplicate consecutive logs
 
@@ -103,40 +110,43 @@ func apply_permanent_upgrade(health_increase: int, damage_increase: int) -> void
 
 # --- INPUT LOGGING ---
 func _log_player_inputs() -> void:
-	var inputs_detected: Array = []
+	# Get current direction in numpad notation
+	var direction: int = 5  # 5 = neutral/center
+	var left_held = Input.is_action_pressed("move_left")
+	var right_held = Input.is_action_pressed("move_right")
+	var down_held = Input.is_action_pressed("down")
 	
-	#check all currently pressed inputs
-	var current_inputs: Array = []
+	# Convert to numpad notation
+	if down_held and left_held:
+		direction = 1  # down-back
+	elif down_held and right_held:
+		direction = 3  # down-forward
+	elif down_held:
+		direction = 2  # down
+	elif left_held:
+		direction = 4  # back
+	elif right_held:
+		direction = 6  # forward
+	# 5 is already set as default (neutral)
 	
-	#directional inputs 
-	if Input.is_action_pressed("move_left"):
-		current_inputs.append("LEFT")
-	if Input.is_action_pressed("move_right"):
-		current_inputs.append("RIGHT")
-	if Input.is_action_pressed("down"):
-		current_inputs.append("DOWN")
+	# get current button (use -1 for no button)
+	var button: int = -1
 	
-	#jump
-	if Input.is_action_pressed("jump"):
-		current_inputs.append("JUMP")
-	
-	#dash/roll
-	if Input.is_action_pressed("roll"):
-		current_inputs.append("DASH")
-	
-	#attack variations
+	# check buttons in priority order
 	if Input.is_action_pressed("attack_rb") or (Input.is_action_pressed("attack") and Input.is_key_pressed(KEY_SHIFT)):
-		current_inputs.append("HEAVY_ATTACK")
+		button = 3  # heavy attack
 	elif Input.is_action_pressed("attack"):
-		current_inputs.append("LIGHT_ATTACK")
-	
-	#shoot variations
-	if Input.is_action_pressed("shoot_lb") or (Input.is_action_pressed("shoot") and Input.is_key_pressed(KEY_SHIFT)):
-		current_inputs.append("HADOKEN")
+		button = 1  # light attack
+	elif Input.is_action_pressed("shoot_lb") or (Input.is_action_pressed("shoot") and Input.is_key_pressed(KEY_SHIFT)):
+		button = 4  # hadoken
 	elif Input.is_action_pressed("shoot"):
-		current_inputs.append("SHOOT")
+		button = 2  # shoot
+	elif Input.is_action_pressed("jump"):
+		button = 5  # jump
+	elif Input.is_action_pressed("roll"):
+		button = 6  # dash
 	
-	# check for just_pressed to trigger logging
+	# check if any input changed
 	var just_pressed: bool = false
 	just_pressed = just_pressed or Input.is_action_just_pressed("move_left")
 	just_pressed = just_pressed or Input.is_action_just_pressed("move_right")
@@ -148,53 +158,69 @@ func _log_player_inputs() -> void:
 	just_pressed = just_pressed or Input.is_action_just_pressed("shoot")
 	just_pressed = just_pressed or Input.is_action_just_pressed("shoot_lb")
 	
-	#build combined input string
-	var input_detected: String = ""
-	if current_inputs.size() > 0:
-		input_detected = " + ".join(current_inputs)
-	else:
-		# neutral state - no buttons pressed
-		input_detected = "NEUTRAL"
-	
-	#log when a new input is pressed and it's different from the last one
-	if just_pressed and input_detected != "" and input_detected != last_input:
-		_add_input_to_history(input_detected)
-		last_input = input_detected
-	
-	#reset last_input when returning to neutral
-	if current_inputs.size() == 0 and last_input != "NEUTRAL":
-		_add_input_to_history("NEUTRAL")
-		last_input = "NEUTRAL"
+	# Check if input state changed
+	if direction != current_direction or button != current_button:
+		# Update the PREVIOUS input's frame count (if it exists)
+		if input_history[0].size() > 0:
+			var frames_held = current_frame - input_start_frame
+			input_history[0][input_history[0].size() - 1] = frames_held  # Update last entry
+		
+		# Add NEW input immediately with 1 frame
+		_add_input_to_history(direction, button, 1)
+		
+		# Update to new input and reset timer
+		current_direction = direction
+		current_button = button
+		input_start_frame = current_frame
 
-func _add_input_to_history(input_name: String) -> void:
-	var frame_since_last: int = 0
+func _add_input_to_history(direction: int, button: int, frames_held: int) -> void:
+	# add to 2D array: [frames][direction][button]
+	input_history[0].append(frames_held)   # row 0: frames
+	input_history[1].append(direction)     # row 1: direction
+	input_history[2].append(button)        # row 2: button
 	
-	if input_history.size() > 0:
-		var last_entry = input_history[input_history.size() - 1]
-		frame_since_last = current_frame - last_entry.frame
-	else:
-		frame_since_last = current_frame
+	# keep only the last MAX_INPUT_HISTORY inputs
+	if input_history[0].size() > MAX_INPUT_HISTORY:
+		input_history[0].pop_front()
+		input_history[1].pop_front()
+		input_history[2].pop_front()
 	
-	var entry = {
-		"input": input_name,
-		"frame": current_frame,
-		"frames_since_last": frame_since_last
-	}
-	
-	input_history.append(entry)
-	
-	# Keep only the last MAX_INPUT_HISTORY inputs
-	if input_history.size() > MAX_INPUT_HISTORY:
-		input_history.pop_front()
-	
-	# Print to console
+	# print to console
 	_print_input_history()
 
 func _print_input_history() -> void:
 	print("\n=== INPUT HISTORY ===")
-	for i in range(input_history.size()):
-		var entry = input_history[i]
-		print("[%d] %s (%d frames)" % [i + 1, entry.input, entry.frames_since_last])
+	var history_size = input_history[0].size()
+	for i in range(history_size):
+		var frames = input_history[0][i]
+		var direction = input_history[1][i]
+		var button = input_history[2][i]
+		
+		# convert direction to readable inputs
+		var dir_str = ""
+		match direction:
+			1: dir_str = "DOWN-LEFT"
+			2: dir_str = "DOWN"
+			3: dir_str = "DOWN-RIGHT"
+			4: dir_str = "LEFT"
+			5: dir_str = "NEUTRAL"
+			6: dir_str = "RIGHT"
+			7: dir_str = "UP-LEFT"
+			8: dir_str = "UP"
+			9: dir_str = "UP-RIGHT"
+		
+		# convert button to readable string
+		var btn_str = ""
+		match button:
+			-1: btn_str = "NO BUTTON"
+			1: btn_str = "LIGHT ATTACK"
+			2: btn_str = "SHOOT"
+			3: btn_str = "HEAVY ATTACK"
+			4: btn_str = "HADOKEN"
+			5: btn_str = "JUMP"
+			6: btn_str = "DASH"
+		
+		print("[%d] %d | %d | %d  ← %s + %s" % [i + 1, frames, direction, button, dir_str, btn_str])
 	print("=====================\n")
 
 # --- READY ---
