@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://bd1mybhiatixm"]
 
-[ext_resource type="Texture2D" uid="uid://c8g4owbypiqoo" path="res://assets/sprites/fnaftestimage.png" id="1_2q3n3"]
 [ext_resource type="Script" uid="uid://v4tujgjqvih5" path="res://scenes/story_scene.gd" id="1_glxco"]
+[ext_resource type="Texture2D" uid="uid://dyl5nk0qqwfm5" path="res://assets/sprites/21xx A Cyberpunk MetroidVania.png" id="2_glxco"]
 
 [node name="StoryScene" type="Node2D"]
 script = ExtResource("1_glxco")
@@ -21,15 +21,20 @@ offset_bottom = 1080.0
 layout_mode = 2
 
 [node name="TextureRect" type="TextureRect" parent="Control/CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(1000, 500)
+custom_minimum_size = Vector2(900, 650)
 layout_mode = 2
-texture = ExtResource("1_2q3n3")
+texture = ExtResource("2_glxco")
 expand_mode = 1
 
 [node name="Label" type="Label" parent="Control/CenterContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 50
-text = "THIS IS TEMPORARY TEXT. STORY WILL BE ADDED LATER"
+theme_override_font_sizes/font_size = 39
+text = "You wake up on a cold, hard, metallic floor. You don’t know where you are 
+or what that weird sensation in your arm is. The last thing you remember is 
+walking outside to check the hovermail and then - darkness. There’s only one 
+thing you can do. You get up on your feet ready to face the harsh cybernetic 
+reality you live in. This is the year 21XX."
+horizontal_alignment = 1
 
 [node name="Button" type="Button" parent="Control/CenterContainer/VBoxContainer"]
 layout_mode = 2
