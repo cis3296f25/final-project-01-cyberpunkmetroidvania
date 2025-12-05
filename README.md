@@ -19,7 +19,7 @@ This project is a video game application that implements different pieces of ins
 - Windows may prompt you to allow access to run. However, the game should run smoothly once access is allowed.
 
 ### For MacOS
-- Download the .dmg file under the release labeled "21XX - A Cyberpunk Metroidvania Release V X.X.X Windows Release"
+- Download the .dmg file under the release labeled "21XX - A Cyberpunk Metroidvania Release V X.X.X MacOS Release"
 - Try to open the game. MacOS will not allow you to open the file directly.
 - Navigate to the System Settings either through the System Settings Icon, or by pressing the Apple Icon in the top left corner and then hitting "System Settings"
 - On the lefthand navigation bar, scroll down to privacy and security and click on it.
